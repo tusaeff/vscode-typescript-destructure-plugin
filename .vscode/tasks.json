@@ -11,6 +11,9 @@
 			"presentation": {
 				"reveal": "never"
 			},
+			"options": {
+				"cwd": "${workspaceFolder}/vscode-extension"
+			},
 			"group": {
 				"kind": "build",
 				"isDefault": true
