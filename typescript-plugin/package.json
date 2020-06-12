@@ -2,7 +2,7 @@
   "name": "typescript-plugin",
   "version": "0.1.0",
   "description": "",
-  "main": "./out/index.js",
+  "main": "./out/plugin.js",
   "files": [
     "./out"
   ],
