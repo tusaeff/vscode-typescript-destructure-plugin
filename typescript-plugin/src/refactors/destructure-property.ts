@@ -10,7 +10,6 @@ import {
 
 const isPartOfSpread = (node: tslib.Node) => {
   return (
-    tslib.isBindingElement(node.parent) &&
     node.parent
       .getChildren()
       .some((n) => n.kind === tslib.SyntaxKind.DotDotDotToken)
@@ -30,6 +29,7 @@ export class DestructureProperty extends Refactor {
   canBeApplied(node?: tslib.Node) {
     return node
       && tslib.isIdentifier(node)
+      && tslib.isBindingElement(node.parent)
       && !isPartOfSpread(node)
       && isDestructurable(this.info, node);
   }

@@ -1,7 +1,13 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { Refactor, ERefactorKind } from '../common/refactor';
-import { getNodeByLocation, getNodeType, getTypeDestructuring, createTextEdit, traverseParents, isDestructurable } from '../utils'
-
+import {
+  getNodeByLocation,
+  getNodeType,
+  getTypeDestructuring,
+  createTextEdit,
+  traverseParents,
+  isDestructurable,
+} from '../utils';
 
 export class DestructureToConstant extends Refactor {
   name = ERefactorKind.destructureToConstant;
@@ -14,7 +20,11 @@ export class DestructureToConstant extends Refactor {
   ];
 
   canBeApplied(node?: tslib.Node) {
-    return isDestructurable(this.info, node);
+    return (
+      node &&
+      isDestructurable(this.info, node) &&
+      !tslib.isTypeReferenceNode(node.parent)
+    );
   }
 
   apply(
@@ -37,47 +47,57 @@ export class DestructureToConstant extends Refactor {
 
     const isFunctionParameter = tslib.isParameter(node.parent);
     const isBindingElement = tslib.isBindingElement(node.parent);
-    
+
     if (isFunctionParameter) {
-      const fnDecl = traverseParents(node, (parent) => (
-        tslib.isFunctionDeclaration(parent)
-        || tslib.isFunctionExpression(parent)
-        || tslib.isArrowFunction(parent)
-      ))
+      const fnDecl = traverseParents(
+        node,
+        (parent) =>
+          tslib.isFunctionDeclaration(parent) ||
+          tslib.isFunctionExpression(parent) ||
+          tslib.isArrowFunction(parent)
+      );
 
       const nodes = fnDecl.getChildren();
-      const block = nodes.find(n => tslib.isBlock(n));
+      const block = nodes.find((n) => tslib.isBlock(n));
 
       if (block) {
         return createTextEdit(fileName, block.pos + 2, `\n${renameTo}\n`);
       } else if (tslib.isArrowFunction(fnDecl)) {
-        const arrowIndex = nodes.findIndex(n => n.kind === tslib.SyntaxKind.EqualsGreaterThanToken);
+        const arrowIndex = nodes.findIndex(
+          (n) => n.kind === tslib.SyntaxKind.EqualsGreaterThanToken
+        );
 
         if (arrowIndex === -1) {
-          return
+          return;
         }
 
         const arrow = nodes[arrowIndex];
         const afterArrow = nodes.slice(arrowIndex + 1);
-        const oldReturn = afterArrow.reduce((text, node) => text + node.getText(), '');
+        const oldReturn = afterArrow.reduce(
+          (text, node) => text + node.getText(),
+          ''
+        );
         const newText = `{\n ${renameTo}; \n\n return ${oldReturn} \n}`;
 
-        return createTextEdit(fileName, { pos: arrow.end + 1, end: afterArrow[0].end }, newText);
+        return createTextEdit(
+          fileName,
+          { pos: arrow.end + 1, end: afterArrow[0].end },
+          newText
+        );
       } else {
         return;
       }
     } else if (isBindingElement) {
-      const variableDecl = traverseParents(node, (parent) => (
+      const variableDecl = traverseParents(node, (parent) =>
         tslib.isVariableDeclaration(parent)
-      ))
+      );
 
       if (!variableDecl) {
-        return
+        return;
       }
 
       return createTextEdit(fileName, variableDecl.end + 1, '\n\n' + renameTo);
     }
-  
 
     return createTextEdit(fileName, positionOrRange, renameTo);
   }

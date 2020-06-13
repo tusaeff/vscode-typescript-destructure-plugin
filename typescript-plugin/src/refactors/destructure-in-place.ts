@@ -35,7 +35,7 @@ export class DestructureInPlace extends Refactor {
 
     return createTextEdit(
       fileName,
-      positionOrRange,
+      node,
       destructStatement || ''
     );
   }

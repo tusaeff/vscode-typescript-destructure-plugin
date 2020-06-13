@@ -36,10 +36,6 @@ export function createTextEdit(
 }
 
 export function getTypeDestructuring(type: tslib.Type) {
-  if (type.flags !== tslib.TypeFlags.Object) {
-    return;
-  }
-
   const properties = type.getProperties();
 
   let destructStatement;
@@ -165,9 +161,10 @@ const contextsKindsWithForbiddenDestructure = [
 
 export function isDestructurable (info: tslib.server.PluginCreateInfo, node?: tslib.Node) {
   const isIdentifier = node && node.kind === tslib.SyntaxKind.Identifier;
-    const type = isIdentifier && getNodeType(info, node!);
-    const isObject = type && type.flags === tslib.TypeFlags.Object;
-    const isContextForbidden = !node || contextsKindsWithForbiddenDestructure.indexOf(node.parent.kind) !== -1;
+  const type = isIdentifier && getNodeType(info, node!);
+  const isObject = type && (type as tslib.ObjectType).objectFlags // TODO: узнать какие именно objectFlags мне нужно поддерживать
 
-    return isIdentifier && isObject && !isContextForbidden;
+  const isContextForbidden = !node || contextsKindsWithForbiddenDestructure.indexOf(node.parent.kind) !== -1;
+
+  return isIdentifier && isObject && !isContextForbidden;
 }
