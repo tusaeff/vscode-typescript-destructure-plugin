@@ -1,6 +1,6 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { Refactor, ERefactorKind } from "../common/Refactor";
-import { getNodeByLocation, getNodeType, getTypeDestructuring, createTextEdit } from '../utils'
+import { getNodeByLocation, getNodeType, getTypeDestructuring, createTextEdit, isDestructurable } from '../utils'
 
 export class DestructureInPlace extends Refactor {
   name = ERefactorKind.destructureInPlace;
@@ -13,11 +13,7 @@ export class DestructureInPlace extends Refactor {
   ];
 
   canBeApplied(node?: tslib.Node) {
-    return (
-      node &&
-      node.kind === tslib.SyntaxKind.Identifier &&
-      node.parent.kind === tslib.SyntaxKind.Parameter
-    );
+    return node && isDestructurable(this.info, node) && tslib.isParameter(node.parent);
   }
 
   apply(
