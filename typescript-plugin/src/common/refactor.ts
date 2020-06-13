@@ -5,6 +5,7 @@ export enum ERefactorKind {
   destructureInPlace = 'destructure-in-place',
   destructurePropery = 'destructure-property',
   destructureSpread = 'destructure-spread',
+  rollIntoSpread = 'roll-into-spread',
 }
 
 export abstract class Refactor implements tslib.ApplicableRefactorInfo {
@@ -12,7 +13,11 @@ export abstract class Refactor implements tslib.ApplicableRefactorInfo {
   abstract description: string;
   abstract actions: tslib.RefactorActionInfo[];
 
-  abstract canBeApplied(node?: tslib.Node): boolean | undefined;
+  abstract canBeApplied(
+    node: tslib.Node | undefined,
+    fileName: string,
+    positionOrRange: number | tslib.TextRange
+  ): boolean | undefined;
   abstract apply(
     fileName: string,
     formatOptions: tslib.FormatCodeSettings,
