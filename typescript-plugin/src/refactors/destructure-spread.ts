@@ -1,7 +1,13 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
-import { Refactor, ERefactorKind } from "../common/Refactor";
-import { getNodeByLocation, getNodeType, getTypeDestructuring, createTextEdit, isDestructurable } from '../utils'
-
+import { Refactor, ERefactorKind } from '../common/Refactor';
+import {
+  getNodeByLocation,
+  getNodeType,
+  getTypeDestructuring,
+  createTextEdit,
+  isDestructurable,
+  printNode,
+} from '../utils';
 
 const getElements = (node: tslib.Node) => {
   if (tslib.isBindingElement(node)) {
@@ -9,26 +15,37 @@ const getElements = (node: tslib.Node) => {
 
     return {
       bindingElement: node,
-      identifier: children.find(n => tslib.isIdentifier(n)),
-      dotDotToken: children.find(n => n.kind === tslib.SyntaxKind.DotDotDotToken),
-    }
-    
+      identifier: children.find((n) => tslib.isIdentifier(n)),
+      dotDotToken: children.find(
+        (n) => n.kind === tslib.SyntaxKind.DotDotDotToken
+      ),
+    };
   } else if (tslib.isIdentifier(node)) {
     return {
-      bindingElement: node.parent,
+      bindingElement: node.parent as tslib.BindingElement,
       identifier: node,
-      dotDotToken: node.parent.getChildren().find(n => n.kind === tslib.SyntaxKind.DotDotDotToken),
-    }
+      dotDotToken: node.parent
+        .getChildren()
+        .find((n) => n.kind === tslib.SyntaxKind.DotDotDotToken),
+    };
   } else if (node.kind === tslib.SyntaxKind.DotDotDotToken) {
     return {
-      bindingElement: node.parent,
+      bindingElement: node.parent as tslib.BindingElement,
       identifier: node.parent.getChildren().find(tslib.isIdentifier),
       dotDotToken: node,
-    }
+    };
   }
 
   return {};
-}
+};
+
+const createBindingElementsForType = (type: tslib.Type) => {
+  return type
+    .getProperties()
+    .map((property) =>
+      tslib.createBindingElement(undefined, undefined, property.getName())
+    );
+};
 
 export class DestructureSpread extends Refactor {
   name = ERefactorKind.destructureSpread;
@@ -45,13 +62,11 @@ export class DestructureSpread extends Refactor {
       return;
     }
 
-    const {
-      bindingElement,
-      dotDotToken,
-      identifier
-    } = getElements(node)
+    const { bindingElement, dotDotToken, identifier } = getElements(node);
 
-    return bindingElement && dotDotToken && isDestructurable(this.info, identifier);
+    return (
+      bindingElement && dotDotToken && isDestructurable(this.info, identifier)
+    );
   }
 
   apply(
@@ -68,29 +83,24 @@ export class DestructureSpread extends Refactor {
       return;
     }
 
-    const {
-      identifier,
-      bindingElement
-    } = getElements(node);
+    const { identifier, bindingElement, dotDotToken } = getElements(node);
     const identifierType = identifier && getNodeType(this.info, identifier);
 
     if (!identifier || !identifierType || !bindingElement) {
       return;
     }
 
-    let newText = getTypeDestructuring(identifierType) || '';
+    const bindingPattern = bindingElement.parent;
 
-    newText = newText
-      .trim()
-      .replace(/\/n$/, '')
+    if (tslib.isObjectBindingPattern(bindingPattern)) {
+      const updatedNode = tslib.updateObjectBindingPattern(bindingPattern, [
+        ...bindingPattern.elements.filter(elm => elm !== bindingElement),
+        ...createBindingElementsForType(identifierType),
+      ]);
 
-    newText = '\n' + newText;
+      const newText = printNode(this.info, fileName, updatedNode)
 
-    const range = {
-      pos: bindingElement.pos,
-      end: bindingElement.end,
-    };
-
-    return createTextEdit(fileName, range, newText || '');
+      return createTextEdit(fileName, updatedNode, ` ${newText}`); // TODO: подумать об отсутствующих пробелах
+    }
   }
 }
