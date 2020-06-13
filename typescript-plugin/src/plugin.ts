@@ -1,11 +1,11 @@
-import * as ts_module from 'typescript/lib/tsserverlibrary';
+import * as tslib from 'typescript/lib/tsserverlibrary';
 import { getApplicableRefactors, getEditForRefactors } from './index';
 import { initRefactors } from './refactors/index';
 
-function init(modules: { typescript: typeof ts_module }) {
+function init(modules: { typescript: typeof tslib }) {
   const ts = modules.typescript;
 
-  function create(info: ts_module.server.PluginCreateInfo) {
+  function create(info: tslib.server.PluginCreateInfo) {
     initRefactors(info);
 
     const proxy: ts.LanguageService = Object.create(null);
@@ -21,7 +21,7 @@ function init(modules: { typescript: typeof ts_module }) {
     proxy.getApplicableRefactors = (
       fileName,
       positionOrRange
-    ): ts_module.ApplicableRefactorInfo[] => {
+    ): tslib.ApplicableRefactorInfo[] => {
       const defaultRefactors =
         info.languageService.getApplicableRefactors(
           fileName,
@@ -36,11 +36,11 @@ function init(modules: { typescript: typeof ts_module }) {
 
     proxy.getEditsForRefactor = (
       fileName: string,
-      formatOptions: ts_module.FormatCodeSettings,
-      positionOrRange: number | ts_module.TextRange,
+      formatOptions: tslib.FormatCodeSettings,
+      positionOrRange: number | tslib.TextRange,
       refactorName: string,
       actionName: string,
-      preferences: ts_module.UserPreferences | undefined
+      preferences: tslib.UserPreferences | undefined
     ) => {
       const defaultRefactors = info.languageService.getEditsForRefactor(
         fileName,

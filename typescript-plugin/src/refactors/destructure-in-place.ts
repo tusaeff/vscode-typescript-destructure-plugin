@@ -1,4 +1,4 @@
-import * as ts_module from 'typescript/lib/tsserverlibrary';
+import * as tslib from 'typescript/lib/tsserverlibrary';
 import { Refactor, ERefactorKind } from "../common/Refactor";
 import { getNodeByLocation, getNodeType, getTypeDestructuring, createTextEdit } from '../utils'
 
@@ -12,21 +12,21 @@ export class DestructureInPlace extends Refactor {
     },
   ];
 
-  canBeApplied(node?: ts_module.Node) {
+  canBeApplied(node?: tslib.Node) {
     return (
       node &&
-      node.kind === ts_module.SyntaxKind.Identifier &&
-      node.parent.kind === ts_module.SyntaxKind.Parameter
+      node.kind === tslib.SyntaxKind.Identifier &&
+      node.parent.kind === tslib.SyntaxKind.Parameter
     );
   }
 
   apply(
     fileName: string,
-    formatOptions: ts_module.FormatCodeSettings,
-    positionOrRange: number | ts_module.TextRange,
+    formatOptions: tslib.FormatCodeSettings,
+    positionOrRange: number | tslib.TextRange,
     refactorName: string,
     actionName: string,
-    preferences: ts_module.UserPreferences | undefined
+    preferences: tslib.UserPreferences | undefined
   ) {
     const node = getNodeByLocation(this.info, fileName, positionOrRange);
     const type = node && getNodeType(this.info, node);

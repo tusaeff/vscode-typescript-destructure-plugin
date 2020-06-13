@@ -1,4 +1,4 @@
-import * as ts_module from 'typescript/lib/tsserverlibrary';
+import * as tslib from 'typescript/lib/tsserverlibrary';
 
 export enum ERefactorKind {
   destructureToConstant = 'destructure-to-constant',
@@ -7,20 +7,20 @@ export enum ERefactorKind {
   destructureSpread = 'destructure-spread',
 }
 
-export abstract class Refactor implements ts_module.ApplicableRefactorInfo {
+export abstract class Refactor implements tslib.ApplicableRefactorInfo {
   abstract name: ERefactorKind;
   abstract description: string;
-  abstract actions: ts_module.RefactorActionInfo[];
+  abstract actions: tslib.RefactorActionInfo[];
 
-  abstract canBeApplied(node?: ts_module.Node): boolean | undefined;
+  abstract canBeApplied(node?: tslib.Node): boolean | undefined;
   abstract apply(
     fileName: string,
-    formatOptions: ts_module.FormatCodeSettings,
-    positionOrRange: number | ts_module.TextRange,
+    formatOptions: tslib.FormatCodeSettings,
+    positionOrRange: number | tslib.TextRange,
     refactorName: string,
     actionName: string,
-    preferences: ts_module.UserPreferences | undefined
-  ): ts_module.RefactorEditInfo | undefined;
+    preferences: tslib.UserPreferences | undefined
+  ): tslib.RefactorEditInfo | undefined;
 
-  constructor(protected info: ts_module.server.PluginCreateInfo) {}
+  constructor(protected info: tslib.server.PluginCreateInfo) {}
 }

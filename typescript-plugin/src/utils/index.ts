@@ -1,8 +1,19 @@
-import * as ts_module from 'typescript/lib/tsserverlibrary';
+import * as tslib from 'typescript/lib/tsserverlibrary';
+
+export const traverseParents = (
+  node: tslib.Node,
+  cb: (node: tslib.Node) => boolean | undefined
+): tslib.Node => {
+  if (cb(node)) {
+    return node;
+  }
+
+  return traverseParents(node.parent, cb);
+};
 
 export function createTextEdit(
   fileName: string,
-  positionOrRange: number | ts_module.TextRange,
+  positionOrRange: number | tslib.TextRange,
   newText: string
 ) {
   const range = positionOrRangeToRange(positionOrRange);
@@ -24,8 +35,8 @@ export function createTextEdit(
   };
 }
 
-export function getTypeDestructuring(type: ts_module.Type) {
-  if (type.flags !== ts_module.TypeFlags.Object) {
+export function getTypeDestructuring(type: tslib.Type) {
+  if (type.flags !== tslib.TypeFlags.Object) {
     return;
   }
 
@@ -51,7 +62,10 @@ export function getTypeDestructuring(type: ts_module.Type) {
   return `${destructStatement}`;
 }
 
-export function getNodeType(info: ts_module.server.PluginCreateInfo, node: ts_module.Node) {
+export function getNodeType(
+  info: tslib.server.PluginCreateInfo,
+  node: tslib.Node
+) {
   const program = info.languageService.getProgram();
 
   if (!program) {
@@ -63,9 +77,9 @@ export function getNodeType(info: ts_module.server.PluginCreateInfo, node: ts_mo
 }
 
 export function getNodeByLocation(
-  info: ts_module.server.PluginCreateInfo,
+  info: tslib.server.PluginCreateInfo,
   fileName: string,
-  positionOrRange: number | ts_module.TextRange
+  positionOrRange: number | tslib.TextRange
 ) {
   const program = info.languageService.getProgram();
 
@@ -89,8 +103,8 @@ export function getNodeByLocation(
 
 /**normalize the parameter so we are sure is of type Range */
 export function positionOrRangeToRange(
-  positionOrRange: number | ts_module.TextRange
-): ts_module.TextRange {
+  positionOrRange: number | tslib.TextRange
+): tslib.TextRange {
   return typeof positionOrRange === 'number'
     ? { pos: positionOrRange, end: positionOrRange }
     : positionOrRange;
@@ -98,30 +112,30 @@ export function positionOrRangeToRange(
 
 /**normalize the parameter so we are sure is of type number */
 export function positionOrRangeToNumber(
-  positionOrRange: number | ts_module.TextRange
+  positionOrRange: number | tslib.TextRange
 ): number {
   return typeof positionOrRange === 'number'
     ? positionOrRange
-    : (positionOrRange as ts_module.TextRange).pos;
+    : (positionOrRange as tslib.TextRange).pos;
 }
 
 /** from given position we find the child node that contains it */
 export function findChildContainingPosition(
-  sourceFile: ts_module.SourceFile,
+  sourceFile: tslib.SourceFile,
   position: number
-): ts_module.Node | undefined {
+): tslib.Node | undefined {
   function find(node: ts.Node): ts.Node | undefined {
     if (position >= node.getStart() && position < node.getEnd()) {
-      return ts_module.forEachChild(node, find) || node;
+      return tslib.forEachChild(node, find) || node;
     }
   }
   return find(sourceFile);
 }
 
 export function findAllNodesInRange(
-  sourceFile: ts_module.SourceFile,
-  position: ts_module.TextRange
-): ts_module.Node[] {
+  sourceFile: tslib.SourceFile,
+  position: tslib.TextRange
+): tslib.Node[] {
   function find(node: ts.Node, acc: ts.Node[] = []): ts.Node[] | undefined {
     const isNodeInRange =
       position.pos <= node.getStart() && position.end >= node.getEnd();
@@ -131,15 +145,29 @@ export function findAllNodesInRange(
     if (isNodeInRange) {
       acc.push(node);
     } else if (isNodeIncludesRange) {
-      ts_module.forEachChild(node, (node) => find(node, acc));
+      tslib.forEachChild(node, (node) => find(node, acc));
     }
 
     return undefined;
   }
 
-  let acc: ts_module.Node[] = [];
+  let acc: tslib.Node[] = [];
 
   find(sourceFile, acc);
 
   return acc;
+}
+
+const contextsKindsWithForbiddenDestructure = [
+  tslib.SyntaxKind.PropertyAssignment,
+  tslib.SyntaxKind.PropertyDeclaration,
+]
+
+export function isDestructurable (info: tslib.server.PluginCreateInfo, node?: tslib.Node) {
+  const isIdentifier = node && node.kind === tslib.SyntaxKind.Identifier;
+    const type = isIdentifier && getNodeType(info, node!);
+    const isObject = type && type.flags === tslib.TypeFlags.Object;
+    const isContextForbidden = !node || contextsKindsWithForbiddenDestructure.indexOf(node.parent.kind) !== -1;
+
+    return isIdentifier && isObject && !isContextForbidden;
 }

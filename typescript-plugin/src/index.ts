@@ -1,11 +1,11 @@
-import * as ts_module from 'typescript/lib/tsserverlibrary';
+import * as tslib from 'typescript/lib/tsserverlibrary';
 import { findChildContainingPosition, positionOrRangeToNumber } from './utils';
 import { availableRefactors } from './refactors';
 
 export function getApplicableRefactors(
-  info: ts_module.server.PluginCreateInfo,
+  info: tslib.server.PluginCreateInfo,
   fileName: string,
-  positionOrRange: ts_module.TextRange | number
+  positionOrRange: tslib.TextRange | number
 ) {
   const program = info.languageService.getProgram();
   const sourceFile = program && program.getSourceFile(fileName);
@@ -30,11 +30,11 @@ export function getApplicableRefactors(
 
 export function getEditForRefactors(
   fileName: string,
-  formatOptions: ts_module.FormatCodeSettings,
-  positionOrRange: number | ts_module.TextRange,
+  formatOptions: tslib.FormatCodeSettings,
+  positionOrRange: number | tslib.TextRange,
   refactorName: string,
   actionName: string,
-  preferences: ts_module.UserPreferences | undefined
+  preferences: tslib.UserPreferences | undefined
 ) {
   const refactor = availableRefactors.find((ref) => ref.name === actionName);
 
