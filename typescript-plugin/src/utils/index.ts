@@ -35,6 +35,31 @@ export function createTextEdit(
   };
 }
 
+export function printNode(
+  info: tslib.server.PluginCreateInfo,
+  fileName: string,
+  node: tslib.Node
+) {
+  const program = info.languageService.getProgram();
+  const sourceFile = program && program.getSourceFile(fileName);
+
+  if (!program || !sourceFile) {
+    return;
+  }
+
+  const printer = tslib.createPrinter();
+
+  return printer.printNode(tslib.EmitHint.Unspecified, node, sourceFile);
+}
+
+export function createObjectBindingPatternForType(type: tslib.Type) {
+  const bindings = type
+    .getProperties()
+    .map((p) => tslib.createBindingElement(undefined, undefined, p.getName()));
+
+  return tslib.createObjectBindingPattern(bindings);
+}
+
 export function getTypeDestructuring(type: tslib.Type) {
   const properties = type.getProperties();
 
@@ -157,14 +182,19 @@ export function findAllNodesInRange(
 const contextsKindsWithForbiddenDestructure = [
   tslib.SyntaxKind.PropertyAssignment,
   tslib.SyntaxKind.PropertyDeclaration,
-]
+];
 
-export function isDestructurable (info: tslib.server.PluginCreateInfo, node?: tslib.Node) {
+export function isDestructurable(
+  info: tslib.server.PluginCreateInfo,
+  node?: tslib.Node
+) {
   const isIdentifier = node && node.kind === tslib.SyntaxKind.Identifier;
   const type = isIdentifier && getNodeType(info, node!);
-  const isObject = type && (type as tslib.ObjectType).objectFlags // TODO: узнать какие именно objectFlags мне нужно поддерживать
+  const isObject = type && (type as tslib.ObjectType).objectFlags; // TODO: узнать какие именно objectFlags мне нужно поддерживать
 
-  const isContextForbidden = !node || contextsKindsWithForbiddenDestructure.indexOf(node.parent.kind) !== -1;
+  const isContextForbidden =
+    !node ||
+    contextsKindsWithForbiddenDestructure.indexOf(node.parent.kind) !== -1;
 
   return isIdentifier && isObject && !isContextForbidden;
 }

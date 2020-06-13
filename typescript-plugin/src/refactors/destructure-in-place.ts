@@ -1,6 +1,13 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
-import { Refactor, ERefactorKind } from "../common/Refactor";
-import { getNodeByLocation, getNodeType, getTypeDestructuring, createTextEdit, isDestructurable } from '../utils'
+import { Refactor, ERefactorKind } from '../common/Refactor';
+import {
+  getNodeByLocation,
+  getNodeType,
+  createObjectBindingPatternForType,
+  printNode,
+  createTextEdit,
+  isDestructurable,
+} from '../utils';
 
 export class DestructureInPlace extends Refactor {
   name = ERefactorKind.destructureInPlace;
@@ -13,7 +20,11 @@ export class DestructureInPlace extends Refactor {
   ];
 
   canBeApplied(node?: tslib.Node) {
-    return node && isDestructurable(this.info, node) && tslib.isParameter(node.parent);
+    return (
+      node &&
+      isDestructurable(this.info, node) &&
+      tslib.isParameter(node.parent)
+    );
   }
 
   apply(
@@ -23,7 +34,7 @@ export class DestructureInPlace extends Refactor {
     refactorName: string,
     actionName: string,
     preferences: tslib.UserPreferences | undefined
-  ) {
+  ): tslib.RefactorEditInfo | undefined {
     const node = getNodeByLocation(this.info, fileName, positionOrRange);
     const type = node && getNodeType(this.info, node);
 
@@ -31,12 +42,21 @@ export class DestructureInPlace extends Refactor {
       return;
     }
 
-    const destructStatement = `{ ${ getTypeDestructuring(type) } }`;
+    const bindingPatternNode = createObjectBindingPatternForType(type);
+    const newText = printNode(
+      this.info,
+      fileName,
+      bindingPatternNode,
+    );
+
+    if (!newText) {
+      return;
+    }
 
     return createTextEdit(
       fileName,
       node,
-      destructStatement || ''
+      newText
     );
   }
 }
