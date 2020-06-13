@@ -1,6 +1,34 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { Refactor, ERefactorKind } from "../common/Refactor";
-import { getNodeByLocation, getNodeType, getTypeDestructuring, createTextEdit } from '../utils'
+import { getNodeByLocation, getNodeType, getTypeDestructuring, createTextEdit, isDestructurable } from '../utils'
+
+
+const getElements = (node: tslib.Node) => {
+  if (tslib.isBindingElement(node)) {
+    const children = node.getChildren();
+
+    return {
+      bindingElement: node,
+      identifier: children.find(n => tslib.isIdentifier(n)),
+      dotDotToken: children.find(n => n.kind === tslib.SyntaxKind.DotDotDotToken),
+    }
+    
+  } else if (tslib.isIdentifier(node)) {
+    return {
+      bindingElement: node.parent,
+      identifier: node,
+      dotDotToken: node.parent.getChildren().find(n => n.kind === tslib.SyntaxKind.DotDotDotToken),
+    }
+  } else if (node.kind === tslib.SyntaxKind.DotDotDotToken) {
+    return {
+      bindingElement: node.parent,
+      identifier: node.parent.getChildren().find(tslib.isIdentifier),
+      dotDotToken: node,
+    }
+  }
+
+  return {};
+}
 
 export class DestructureSpread extends Refactor {
   name = ERefactorKind.destructureSpread;
@@ -13,12 +41,17 @@ export class DestructureSpread extends Refactor {
   ];
 
   canBeApplied(node?: tslib.Node) {
-    return (
-      node &&
-      node.kind === tslib.SyntaxKind.Identifier &&
-      node.parent.kind === tslib.SyntaxKind.BindingElement
-      && node.parent.getChildren(node.getSourceFile()).some((sibling) => sibling.kind === tslib.SyntaxKind.DotDotDotToken)
-    );
+    if (!node) {
+      return;
+    }
+
+    const {
+      bindingElement,
+      dotDotToken,
+      identifier
+    } = getElements(node)
+
+    return bindingElement && dotDotToken && isDestructurable(this.info, identifier);
   }
 
   apply(
@@ -30,13 +63,22 @@ export class DestructureSpread extends Refactor {
     preferences: tslib.UserPreferences | undefined
   ) {
     const node = getNodeByLocation(this.info, fileName, positionOrRange);
-    const type = node && getNodeType(this.info, node);
 
-    if (!node || !type) {
+    if (!node) {
       return;
     }
 
-    let newText = getTypeDestructuring(type) || '';
+    const {
+      identifier,
+      bindingElement
+    } = getElements(node);
+    const identifierType = identifier && getNodeType(this.info, identifier);
+
+    if (!identifier || !identifierType || !bindingElement) {
+      return;
+    }
+
+    let newText = getTypeDestructuring(identifierType) || '';
 
     newText = newText
       .trim()
@@ -44,8 +86,8 @@ export class DestructureSpread extends Refactor {
       .replace(/^\/n/, '');
 
     const range = {
-      pos: node.parent.getStart(),
-      end: node.parent.getEnd(),
+      pos: bindingElement.pos,
+      end: bindingElement.end,
     };
 
     return createTextEdit(fileName, range, newText || '');
