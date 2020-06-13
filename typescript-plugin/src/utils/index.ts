@@ -11,6 +11,87 @@ export const traverseParents = (
   return traverseParents(node.parent, cb);
 };
 
+export type KindGuard<SpecificNode extends tslib.Node> = (
+  node: tslib.Node
+) => node is SpecificNode;
+
+export function findNearestParentByGuards<S1 extends tslib.Node>(
+  node: tslib.Node,
+  gurds: [KindGuard<S1>]
+): undefined | S1;
+
+export function findNearestParentByGuards<
+  S1 extends tslib.Node,
+  S2 extends tslib.Node
+>(node: tslib.Node, gurds: [KindGuard<S1>, KindGuard<S2>]): undefined | S1 | S2;
+
+export function findNearestParentByGuards<
+  S1 extends tslib.Node,
+  S2 extends tslib.Node,
+  S3 extends tslib.Node
+>(
+  node: tslib.Node,
+  gurds: [KindGuard<S1>, KindGuard<S2>, KindGuard<S3>]
+): undefined | S1 | S2 | S3;
+
+export function findNearestParentByGuards<
+  S1 extends tslib.Node,
+  S2 extends tslib.Node,
+  S3 extends tslib.Node,
+  S4 extends tslib.Node
+>(
+  node: tslib.Node,
+  gurds: [KindGuard<S1>, KindGuard<S2>, KindGuard<S3>, KindGuard<S4>]
+): undefined | S1 | S2 | S3 | S4;
+
+export function findNearestParentByGuards<
+  S1 extends tslib.Node,
+  S2 extends tslib.Node,
+  S3 extends tslib.Node,
+  S4 extends tslib.Node,
+  S5 extends tslib.Node
+>(
+  node: tslib.Node,
+  gurds: [
+    KindGuard<S1>,
+    KindGuard<S2>,
+    KindGuard<S3>,
+    KindGuard<S4>,
+    KindGuard<S5>
+  ]
+): undefined | S1 | S2 | S3 | S4 | S5;
+
+export function findNearestParentByGuards<
+  S1 extends tslib.Node,
+  S2 extends tslib.Node,
+  S3 extends tslib.Node,
+  S4 extends tslib.Node,
+  S5 extends tslib.Node,
+  S6 extends tslib.Node
+>(
+  node: tslib.Node,
+  gurds: [
+    KindGuard<S1>,
+    KindGuard<S2>,
+    KindGuard<S3>,
+    KindGuard<S4>,
+    KindGuard<S5>,
+    KindGuard<S6>
+  ]
+): undefined | S1 | S2 | S3 | S4 | S5 | S6;
+
+export function findNearestParentByGuards(node: tslib.Node, guards: any[]) {
+  if (!node.parent) {
+    return;
+  }
+
+  const matched = guards.some((g) => g(node.parent));
+
+  return matched
+    ? node.parent
+    : findNearestParentByGuards(node.parent, guards as any);
+}
+
 export function createTextEdit(
   fileName: string,
   positionOrRange: number | tslib.TextRange,
@@ -197,4 +278,69 @@ export function isDestructurable(
     contextsKindsWithForbiddenDestructure.indexOf(node.parent.kind) !== -1;
 
   return isIdentifier && isObject && !isContextForbidden;
+}
+
+export function findFunctionLikeParent(node: tslib.Node) {
+  return findNearestParentByGuards(node, [
+    tslib.isFunctionDeclaration,
+    tslib.isFunctionExpression,
+    tslib.isArrowFunction,
+  ]);
+}
+
+function findStatementsParent(statement: tslib.Statement) {
+  return (traverseParents(
+    statement,
+    (pnode) => tslib.isSourceFile(pnode) || tslib.isBlock(pnode)
+  ) as unknown) as tslib.Block | tslib.SourceFile;
+}
+
+export function insertStatementAfter(
+  statementToInsert: tslib.Statement,
+  anchorStatement: tslib.Statement
+) {
+  const parent = findStatementsParent(anchorStatement);
+  const indexOfAnchorStatement = parent.statements.indexOf(anchorStatement);
+
+  if (indexOfAnchorStatement === -1) {
+    throw new Error('cant find anchorNode inside parent');
+  }
+
+  const updatedStatements = [
+    ...parent.statements.slice(0, indexOfAnchorStatement + 1),
+    statementToInsert,
+    ...parent.statements.slice(indexOfAnchorStatement + 1),
+  ];
+
+  if (tslib.isBlock(parent)) {
+    return tslib.updateBlock(parent, updatedStatements);
+  } else if (tslib.isSourceFile(parent)) {
+    return tslib.updateSourceFileNode(parent, updatedStatements);
+  }
+}
+
+export function replaceStatement(
+  newStatement: tslib.Statement,
+  statementToBeReplaced: tslib.Statement
+) {
+  const parent = findStatementsParent(statementToBeReplaced);
+  const indexOfAnchorStatement = parent.statements.indexOf(
+    statementToBeReplaced
+  );
+
+  if (indexOfAnchorStatement === -1) {
+    throw new Error('cant find anchorNode inside parent');
+  }
+
+  const updatedStatements = [
+    ...parent.statements.slice(0, indexOfAnchorStatement),
+    newStatement,
+    ...parent.statements.slice(indexOfAnchorStatement + 1),
+  ];
+
+  if (tslib.isBlock(parent)) {
+    return tslib.updateBlock(parent, updatedStatements);
+  } else if (tslib.isSourceFile(parent)) {
+    return tslib.updateSourceFileNode(parent, updatedStatements);
+  }
 }

@@ -49,8 +49,8 @@ export class DestructureProperty extends Refactor {
       return;
     }
 
-    const newText = `${node.getText()}: {${getTypeDestructuring(type)}}`;
+    const newText = ` ${node.getText()}: {${getTypeDestructuring(type)}}`;
 
-    return createTextEdit(fileName, node, newText);
+    return createTextEdit(fileName, { ...node, pos: node.pos + 1 }, newText);
   }
 }
