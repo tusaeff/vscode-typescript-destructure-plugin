@@ -193,6 +193,6 @@ export class DestructureToConstant extends Refactor {
       return;
     }
 
-    return createTextEdit(fileName, updatedNode, newText);
+    return createTextEdit(fileName, updatedNode, ` ${newText}`);
   }
 }

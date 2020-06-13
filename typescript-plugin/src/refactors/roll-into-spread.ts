@@ -92,6 +92,6 @@ export class RollIntoSpread extends Refactor {
       return;
     }
 
-    return createTextEdit(fileName, parent, newText);
+    return createTextEdit(fileName, parent, ` ${newText}`);
   }
 }
