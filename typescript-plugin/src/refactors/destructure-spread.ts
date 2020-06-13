@@ -83,7 +83,8 @@ export class DestructureSpread extends Refactor {
     newText = newText
       .trim()
       .replace(/\/n$/, '')
-      .replace(/^\/n/, '');
+
+    newText = '\n' + newText;
 
     const range = {
       pos: bindingElement.pos,
