@@ -1,6 +1,21 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
-import { Refactor, ERefactorKind } from "../common/Refactor";
-import { getNodeByLocation, getNodeType, getTypeDestructuring, createTextEdit } from '../utils'
+import { Refactor, ERefactorKind } from '../common/Refactor';
+import {
+  getNodeByLocation,
+  getNodeType,
+  getTypeDestructuring,
+  createTextEdit,
+  isDestructurable,
+} from '../utils';
+
+const isPartOfSpread = (node: tslib.Node) => {
+  return (
+    tslib.isBindingElement(node.parent) &&
+    node.parent
+      .getChildren()
+      .some((n) => n.kind === tslib.SyntaxKind.DotDotDotToken)
+  );
+};
 
 export class DestructureProperty extends Refactor {
   name = ERefactorKind.destructurePropery;
@@ -13,11 +28,10 @@ export class DestructureProperty extends Refactor {
   ];
 
   canBeApplied(node?: tslib.Node) {
-    return (
-      node &&
-      node.kind === tslib.SyntaxKind.Identifier &&
-      node.parent.kind === tslib.SyntaxKind.BindingElement
-    );
+    return node
+      && tslib.isIdentifier(node)
+      && !isPartOfSpread(node)
+      && isDestructurable(this.info, node);
   }
 
   apply(
