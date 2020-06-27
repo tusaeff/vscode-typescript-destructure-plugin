@@ -8,6 +8,7 @@ import {
   isDestructurable,
   printNode,
 } from '../utils';
+import { TextChanger } from '../common/changer';
 
 const getElements = (node: tslib.Node) => {
   if (tslib.isBindingElement(node)) {
@@ -83,6 +84,8 @@ export class DestructureSpread extends Refactor {
       return;
     }
 
+    const textChanger = new TextChanger(this.info, formatOptions);
+
     const { identifier, bindingElement, dotDotToken } = getElements(node);
     const identifierType = identifier && getNodeType(this.info, identifier);
 
@@ -94,13 +97,13 @@ export class DestructureSpread extends Refactor {
 
     if (tslib.isObjectBindingPattern(bindingPattern)) {
       const updatedNode = tslib.updateObjectBindingPattern(bindingPattern, [
-        ...bindingPattern.elements.filter(elm => elm !== bindingElement),
+        ...bindingPattern.elements.filter((elm) => elm !== bindingElement),
         ...createBindingElementsForType(identifierType),
       ]);
 
-      const newText = printNode(this.info, fileName, updatedNode)
-
-      return createTextEdit(fileName, updatedNode, ` ${newText}`); // TODO: подумать об отсутствующих пробелах
+      return textChanger.replaceNode(updatedNode, updatedNode, fileName, {
+        incrementPos: true,
+      });
     }
   }
 }

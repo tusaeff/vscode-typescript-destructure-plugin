@@ -2,20 +2,23 @@
   "name": "typescript-plugin",
   "version": "0.1.0",
   "description": "",
-  "main": "./out/plugin.js",
+  "main": "./out/src/plugin.js",
   "files": [
     "./out"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint"
+    "watch": "tsc -watch -p ./"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^26.0.3",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.1",
     "typescript": "^3.9.5"
   }
 }

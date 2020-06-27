@@ -8,6 +8,7 @@ import {
   createTextEdit,
   isDestructurable,
 } from '../utils';
+import { TextChanger } from '../common/changer';
 
 export class DestructureInPlace extends Refactor {
   name = ERefactorKind.destructureInPlace;
@@ -43,20 +44,8 @@ export class DestructureInPlace extends Refactor {
     }
 
     const bindingPatternNode = createObjectBindingPatternForType(type);
-    const newText = printNode(
-      this.info,
-      fileName,
-      bindingPatternNode,
-    );
+    const textChanger = new TextChanger(this.info, formatOptions);
 
-    if (!newText) {
-      return;
-    }
-
-    return createTextEdit(
-      fileName,
-      node,
-      newText
-    );
+    return textChanger.replaceNode(node, bindingPatternNode, fileName);
   }
 }

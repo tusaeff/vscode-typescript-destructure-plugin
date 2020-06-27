@@ -12,6 +12,7 @@ import {
   printNode,
   findNearestParentByGuards,
 } from '../utils';
+import { TextChanger } from '../common/changer';
 
 function appendStatementToBlockStart(
   block: tslib.Block,
@@ -120,6 +121,7 @@ export class DestructureToConstant extends Refactor {
   ) {
     const node = getNodeByLocation(this.info, fileName, positionOrRange);
     const type = node && getNodeType(this.info, node);
+    const textChanger = new TextChanger(this.info, formatOptions);
 
     if (!node || !type) {
       return;
@@ -139,60 +141,112 @@ export class DestructureToConstant extends Refactor {
       return undefined;
     }
 
-    let updatedNode = null;
+    console.log('хуй', isFunctionParameter);
 
     if (isFunctionParameter) {
-      const fn = findFunctionLikeParent(node);
-
-      if (!fn) {
-        console.error('ошибка 150')
-        return;
-      }
-
-      updatedNode = appendStatementToFunctionBody(
-        fn,
-        destructuringVariableStatement
+      return this.handleFunctionParameter(
+        node,
+        destructuringVariableStatement,
+        textChanger,
+        fileName
       );
     } else if (isObjectProperty) {
-      const parentDeclaration = findNearestParentByGuards(node, [
-        tslib.isVariableDeclaration,
-      ]);
-
-      if (!parentDeclaration) {
-        console.error('ошибка 150')
-        return;
-      }
-
-      updatedNode = insertStatementAfter(
+      return this.handleObjectProperty(
+        node,
         destructuringVariableStatement,
-        parentDeclaration.parent.parent
+        textChanger,
+        fileName
       );
     } else {
-      // если это не параметр в функции и не поле обьекта, значит это часть ExpressionStatement или VariableStatement
-      const statementToReplace = findNearestParentByGuards(node, [
-        tslib.isExpressionStatement,
-        tslib.isVariableStatement,
-        tslib.isReturnStatement,
-      ]);
-
-      if (!statementToReplace) {
-        console.error('ошибка 150')
-        return;
-      }
-
-      updatedNode = replaceStatement(
+      return this.handleStatement(
+        node,
         destructuringVariableStatement,
-        statementToReplace
+        textChanger,
+        fileName
       );
     }
+  }
 
-    const newText = updatedNode && printNode(this.info, fileName, updatedNode);
+  protected handleFunctionParameter(
+    node: tslib.Node,
+    statement: tslib.Statement,
+    textChanger: TextChanger,
+    fileName: string
+  ) {
+    const fn = findFunctionLikeParent(node);
 
-    if (!updatedNode || !newText) {
-      console.error('нет апдейтнутой ноды');
-      return;
+    if (fn && fn.body && tslib.isBlock(fn.body)) {
+      const firstStatement = fn.body.statements[0];
+
+      if (firstStatement) {
+        // trying to edit as little code as possible, so we should try not edit block itself
+        return textChanger.insertNodeBefore(
+          firstStatement,
+          statement,
+          fileName
+        );
+      } else {
+        const updatedBlock = tslib.updateBlock(fn.body, [statement]);
+
+        return textChanger.replaceNode(updatedBlock, updatedBlock, fileName, {
+          incrementPos: true,
+        });
+      }
+    } else if (fn && tslib.isArrowFunction(fn)) {
+      let updatedNode = appendStatementToFunctionBody(fn, statement);
+
+      return (
+        updatedNode &&
+        textChanger.replaceNode(updatedNode, updatedNode, fileName, {
+          incrementPos: true,
+        })
+      );
+    } else {
+      return undefined;
+    }
+  }
+
+  protected handleObjectProperty(
+    node: tslib.Node,
+    statement: tslib.Statement,
+    textChanger: TextChanger,
+    fileName: string
+  ) {
+    const parentDeclaration = findNearestParentByGuards(node, [
+      tslib.isVariableDeclaration,
+    ]);
+
+    return (
+      parentDeclaration &&
+      textChanger.insertNodeAfter(
+        parentDeclaration.parent.parent,
+        statement,
+        fileName
+      )
+    );
+  }
+
+  protected handleStatement(
+    node: tslib.Node,
+    statement: tslib.Statement,
+    textChanger: TextChanger,
+    fileName: string
+  ) {
+    const parentStatement = findNearestParentByGuards(node, [
+      tslib.isExpressionStatement,
+      tslib.isVariableStatement,
+      tslib.isReturnStatement,
+    ]);
+
+    if (parentStatement && tslib.isVariableStatement(parentStatement)) {
+      return textChanger.insertNodeAfter(parentStatement, statement, fileName);
     }
 
-    return createTextEdit(fileName, updatedNode, ` ${newText}`);
+    return (
+      parentStatement &&
+      textChanger.replaceStatement(parentStatement, statement, fileName, {
+        incrementPos: true,
+      })
+    );
   }
 }

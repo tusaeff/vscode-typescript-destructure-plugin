@@ -6,7 +6,9 @@ import {
   getTypeDestructuring,
   createTextEdit,
   isDestructurable,
+  createObjectBindingPatternForType
 } from '../utils';
+import { TextChanger } from '../common/changer';
 
 const isPartOfSpread = (node: tslib.Node) => {
   return (
@@ -49,8 +51,17 @@ export class DestructureProperty extends Refactor {
       return;
     }
 
-    const newText = ` ${node.getText()}: {${getTypeDestructuring(type)}}`;
+    const oldBindingElement = node.parent as tslib.BindingElement;
 
-    return createTextEdit(fileName, { ...node, pos: node.pos + 1 }, newText);
+    const textChanger = new TextChanger(this.info, formatOptions);
+    const updatedBindingElement = tslib.updateBindingElement(
+      oldBindingElement,
+      undefined,
+      createObjectBindingPatternForType(type) as unknown as tslib.Identifier, // TODO: FIXME
+      oldBindingElement.name,
+      undefined,
+    )
+
+    return textChanger.replaceNode(oldBindingElement, updatedBindingElement, fileName, { incrementPos: true });
   }
 }
