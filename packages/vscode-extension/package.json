@@ -1,6 +1,6 @@
 {
-	"name": "vscode-extension",
-	"displayName": "vscode-extension",
+	"name": "vscode-typescript-destructure-plugin",
+	"displayName": "Typescript Destructure",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -11,12 +11,6 @@
 	],
 
 	"contributes": {
-		"commands": [
-			{
-				"command": "vscode-extension.helloWorld",
-				"title": "Hello World"
-			}
-		],
 		"typescriptServerPlugins": [
 			{
 				"name": "typescript-plugin"
