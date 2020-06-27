@@ -1,0 +1,84 @@
+on:
+  push:
+    tags:
+    - 'v*'
+
+name: Create Release
+
+jobs:
+  release-typescript-plugin:
+    name: Release Typescript Plugin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./packages/typescript-plugin
+
+      - name: Build
+        run: npm run compile
+        working-directory: ./packages/typescript-plugin
+
+      - name: Prepare Publish
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish to NPM Registrys
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        working-directory: ./packages/typescript-plugin
+
+  release-vscode-extension:
+    name: Release VSCode Extension
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./packages/vscode-extension
+
+      - name: Publish to VSCode Extensions Marketplace
+        uses: lannonbr/vsce-action@master
+        with:
+          args: "publish -p $VSCE_TOKEN"
+        working-directory: ./packages/vscode-extensions
+        env:
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+
+  create-github-release:
+    name: Create Github Release
+    runs-on: ubuntu-latest
+    needs: [release-typescript-plugin, release-vscode-extension]
+    steps:
+      - name: Get version from tag
+        env:
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          export CURRENT_VERSION=${GITHUB_TAG/refs\/tags\/v/}
+          echo "::set-env name=CURRENT_VERSION::$CURRENT_VERSION"
+
+      - name: Get Changelog Entry
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v1
+        with:
+          version: ${{ env.CURRENT_VERSION }}
+          path: ./CHANGELOG.md
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.changelog_reader.outputs.log_entry }}
+          draft: false
+          prerelease: false
