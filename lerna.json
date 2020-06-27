@@ -2,5 +2,11 @@
   "packages": [
     "packages/*"
   ],
-  "version": "0.0.0"
+  "publish": {
+    "message": ":bookmark: Release v%s",
+    "version": {
+      "push": false
+    }
+  },
+  "version": "0.0.1-alpha.0"
 }
