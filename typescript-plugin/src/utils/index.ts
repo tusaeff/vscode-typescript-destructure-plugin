@@ -299,48 +299,18 @@ export function insertStatementAfter(
   statementToInsert: tslib.Statement,
   anchorStatement: tslib.Statement
 ) {
-  const parent = findStatementsParent(anchorStatement);
-  const indexOfAnchorStatement = parent.statements.indexOf(anchorStatement);
+  statementToInsert.pos = anchorStatement.end + 1;
+  statementToInsert.end = anchorStatement.end + 1;
 
-  if (indexOfAnchorStatement === -1) {
-    throw new Error('cant find anchorNode inside parent');
-  }
-
-  const updatedStatements = [
-    ...parent.statements.slice(0, indexOfAnchorStatement + 1),
-    statementToInsert,
-    ...parent.statements.slice(indexOfAnchorStatement + 1),
-  ];
-
-  if (tslib.isBlock(parent)) {
-    return tslib.updateBlock(parent, updatedStatements);
-  } else if (tslib.isSourceFile(parent)) {
-    return tslib.updateSourceFileNode(parent, updatedStatements);
-  }
+  return statementToInsert;
 }
 
 export function replaceStatement(
   newStatement: tslib.Statement,
   statementToBeReplaced: tslib.Statement
 ) {
-  const parent = findStatementsParent(statementToBeReplaced);
-  const indexOfAnchorStatement = parent.statements.indexOf(
-    statementToBeReplaced
-  );
+  newStatement.pos = statementToBeReplaced.pos + 1;
+  newStatement.end = statementToBeReplaced.end;
 
-  if (indexOfAnchorStatement === -1) {
-    throw new Error('cant find anchorNode inside parent');
-  }
-
-  const updatedStatements = [
-    ...parent.statements.slice(0, indexOfAnchorStatement),
-    newStatement,
-    ...parent.statements.slice(indexOfAnchorStatement + 1),
-  ];
-
-  if (tslib.isBlock(parent)) {
-    return tslib.updateBlock(parent, updatedStatements);
-  } else if (tslib.isSourceFile(parent)) {
-    return tslib.updateSourceFileNode(parent, updatedStatements);
-  }
+  return newStatement;
 }
