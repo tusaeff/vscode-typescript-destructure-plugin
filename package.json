@@ -1,5 +1,9 @@
 {
   "scripts": {
     "start": "npm run watch --prefix typescript-plugin"
+  },
+  "name": "vscode-typescript-plugin-template-2",
+  "devDependencies": {
+    "lerna": "^3.22.1"
   }
 }
