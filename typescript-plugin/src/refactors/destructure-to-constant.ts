@@ -95,7 +95,7 @@ function appendStatementToFunctionBody(
 
 export class DestructureToConstant extends Refactor {
   name = ERefactorKind.destructureToConstant;
-  description = 'Деструктурировать обьект в отдельную константу';
+  description = 'Destructure object';
   actions = [
     {
       name: ERefactorKind.destructureToConstant,
@@ -140,8 +140,6 @@ export class DestructureToConstant extends Refactor {
     if (!destructuringVariableStatement) {
       return undefined;
     }
-
-    console.log('хуй', isFunctionParameter);
 
     if (isFunctionParameter) {
       return this.handleFunctionParameter(

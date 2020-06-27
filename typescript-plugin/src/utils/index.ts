@@ -271,7 +271,7 @@ export function isDestructurable(
 ) {
   const isIdentifier = node && node.kind === tslib.SyntaxKind.Identifier;
   const type = isIdentifier && getNodeType(info, node!);
-  const isObject = type && (type as tslib.ObjectType).objectFlags; // TODO: узнать какие именно objectFlags мне нужно поддерживать
+  const isObject = type && (type as tslib.ObjectType).objectFlags; // TODO: validate work with objectFlags
 
   const isContextForbidden =
     !node ||

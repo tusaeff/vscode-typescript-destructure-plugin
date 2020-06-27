@@ -20,7 +20,7 @@ const isPartOfSpread = (node: tslib.Node) => {
 
 export class DestructureProperty extends Refactor {
   name = ERefactorKind.destructurePropery;
-  description = 'Вложенная деструктуризация';
+  description = 'Destructure object property';
   actions = [
     {
       name: ERefactorKind.destructurePropery,

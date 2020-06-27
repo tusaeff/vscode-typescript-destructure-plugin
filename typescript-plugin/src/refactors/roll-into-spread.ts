@@ -64,7 +64,7 @@ export class RollIntoSpread extends Refactor {
         sourceFile,
         positionOrRange
       ) as tslib.BindingElement[]);
-    const parent = selectedNodes[0].parent as tslib.ObjectBindingPattern; // TODO: может ли быть разный parent
+    const parent = selectedNodes[0].parent as tslib.ObjectBindingPattern;
     const bindingElements: tslib.BindingElement[] = [];
 
     parent.forEachChild(node => {

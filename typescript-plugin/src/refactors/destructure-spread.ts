@@ -50,7 +50,7 @@ const createBindingElementsForType = (type: tslib.Type) => {
 
 export class DestructureSpread extends Refactor {
   name = ERefactorKind.destructureSpread;
-  description = 'Вложенная деструктуризация';
+  description = 'Destructure spread';
   actions = [
     {
       name: ERefactorKind.destructureSpread,

@@ -12,7 +12,7 @@ import { TextChanger } from '../common/changer';
 
 export class DestructureInPlace extends Refactor {
   name = ERefactorKind.destructureInPlace;
-  description = 'Деструктурировать обьект на месте';
+  description = 'Destructure object in place';
   actions = [
     {
       name: ERefactorKind.destructureInPlace,
