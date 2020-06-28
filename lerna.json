@@ -1,6 +1,7 @@
 {
   "packages": [
-    "packages/*"
+    "typescript-plugin",
+    "vscode-extension"
   ],
   "publish": {
     "message": ":bookmark: Release v%s",

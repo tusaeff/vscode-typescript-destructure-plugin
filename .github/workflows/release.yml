@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./packages/typescript-plugin
+        working-directory: ./typescript-plugin
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,14 +32,13 @@ jobs:
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        working-directory: ./packages/typescript-plugin
 
   release-vscode-extension:
     name: Release VSCode Extension
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./packages/vscode-extension
+        working-directory: ./vscode-extension
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -57,7 +56,7 @@ jobs:
   create-github-release:
     name: Create Github Release
     runs-on: ubuntu-latest
-    # needs: [release-typescript-plugin, release-vscode-extension]
+    needs: [release-typescript-plugin, release-vscode-extension]
     steps:
       - name: Get version from tag
         env:
