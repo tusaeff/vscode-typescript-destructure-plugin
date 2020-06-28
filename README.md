@@ -42,7 +42,7 @@ Creates a variable with destructuring assignment of the object fields. At the mo
 
 \!\[destructuring-assignment\]\(images/destructuring-assignment.png\)
 
-### Replace parameter with destructuring
+### Destructure function parameter
 Transforms the function argument into destructurization. 
 
 * before: `(props) => {/* ... */}`

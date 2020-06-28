@@ -19,7 +19,7 @@ export class RollIntoSpread extends Refactor {
   actions = [
     {
       name: ERefactorKind.rollIntoSpread,
-      description: 'Roll into spread',
+      description: 'Collapse into rest operator',
     },
   ];
 

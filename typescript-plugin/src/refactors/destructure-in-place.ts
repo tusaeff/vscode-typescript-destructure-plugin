@@ -16,7 +16,7 @@ export class DestructureInPlace extends Refactor {
   actions = [
     {
       name: ERefactorKind.destructureInPlace,
-      description: 'Destructure object (inplace)',
+      description: 'Destructure function parameter',
     },
   ];
 

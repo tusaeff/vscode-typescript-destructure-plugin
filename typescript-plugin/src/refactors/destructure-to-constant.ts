@@ -99,7 +99,7 @@ export class DestructureToConstant extends Refactor {
   actions = [
     {
       name: ERefactorKind.destructureToConstant,
-      description: 'Destructure object',
+      description: 'Create destructuring assignment',
     },
   ];
 

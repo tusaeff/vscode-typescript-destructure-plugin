@@ -54,7 +54,7 @@ export class DestructureSpread extends Refactor {
   actions = [
     {
       name: ERefactorKind.destructureSpread,
-      description: 'Destructure spread',
+      description: 'Unfold the rest operator',
     },
   ];
 
