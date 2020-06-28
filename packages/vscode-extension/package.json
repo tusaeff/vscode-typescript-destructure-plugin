@@ -2,7 +2,12 @@
 	"name": "vscode-typescript-destructure-plugin",
 	"displayName": "Typescript Destructure",
 	"description": "",
-	"version": "0.0.1-alpha.0",
+	"version": "0.0.1",
+	"publisher": "tusaeff",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/tusaeff/vscode-typescript-destructure-plugin"
+	},
 	"engines": {
 		"vscode": "^1.46.0"
 	},
@@ -12,7 +17,7 @@
 	"contributes": {
 		"typescriptServerPlugins": [
 			{
-				"name": "typescript-plugin"
+				"name": "typescript-destructure-plugin"
 			}
 		]
 	},
@@ -24,7 +29,7 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"dependencies": {
-		"typescript-plugin": "*"
+		"typescript-destructure-plugin": "0.0.1-alpha.2"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",

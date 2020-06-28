@@ -1,12 +1,13 @@
 {
   "name": "typescript-destructure-plugin",
-  "version": "0.0.1-alpha.0",
+  "version": "0.0.1-alpha.2",
   "description": "",
   "main": "./out/src/plugin.js",
   "files": [
-    "./out"
+    "out/**/*"
   ],
   "scripts": {
+    "prepublish": "npm run compile",
     "test": "jest",
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
