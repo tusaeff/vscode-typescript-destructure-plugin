@@ -271,6 +271,14 @@ export function isDestructurable(
 ) {
   const isIdentifier = node && node.kind === tslib.SyntaxKind.Identifier;
   const type = isIdentifier && getNodeType(info, node!);
+
+  if (type) {
+    // seems like typescript has some lazy evaluation mechanism around object types
+    // without this getProperties call objectFlags aren't set on recently added identifiers
+    // TODO: check ts code to find out the cause of this bug.
+    type.getProperties();
+  }
+
   const isObject = type && (type as tslib.ObjectType).objectFlags; // TODO: validate work with objectFlags
 
   const isContextForbidden =
