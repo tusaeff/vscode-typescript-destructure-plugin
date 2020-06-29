@@ -1,5 +1,5 @@
 import { Printer } from '../../src/common/printer';
-import { getPluginCreateInfo, TEST_FILENAME } from '../mock';
+import { getPluginCreateInfo, TEST_FILENAME } from '../framework';
 import * as tslib from 'typescript/lib/tsserverlibrary';
 
 describe('Printer', () => {
@@ -405,7 +405,7 @@ describe('Printer', () => {
 
       const printed = printer.printNodeWithIndentation(
         tree,
-        { base: 4, indentStart: false },
+        { base: 4, indentStart: true },
         TEST_FILENAME
       );
 
