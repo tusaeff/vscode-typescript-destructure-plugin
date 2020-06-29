@@ -87,7 +87,11 @@ describe('Create destructuring assignment', () => {
       }
 
       const obj = {} as IObject;
-      const { property1, property2, property3 } = obj;
+      const {
+        property1,
+        property2,
+        property3
+      } = obj;
       `;
 
     expect(applyAtSelection(refactor, mock)?.trim()).toBe(expected.trim());
@@ -112,7 +116,11 @@ describe('Create destructuring assignment', () => {
       }
 
       function (parameter: IObject) {
-        const { property1, property2, property3 } = parameter;
+        const {
+          property1,
+          property2,
+          property3
+        } = parameter;
       }
     `;
 
@@ -138,7 +146,11 @@ describe('Create destructuring assignment', () => {
       }
 
       const fn = (parameter: IObject) => {
-        const { property1, property2, property3 } = parameter;
+        const {
+          property1,
+          property2,
+          property3
+        } = parameter;
         return parameter;
       };
     `;
@@ -175,7 +187,11 @@ describe('Create destructuring assignment', () => {
       const {
         obj
       } = acc;
-      const { property1, property2, property3 } = obj;
+      const {
+        property1,
+        property2,
+        property3
+      } = obj;
     `;
 
     expect(applyAtSelection(refactor, mock)?.trim()).toBe(expected.trim());

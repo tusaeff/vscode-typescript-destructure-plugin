@@ -1,5 +1,5 @@
 import { Printer } from '../../src/common/printer';
-import { getPluginCreateInfo, TEST_FILENAME } from '../framework';
+import { getPluginCreateInfo, TEST_FILENAME, withoutIndent } from '../framework';
 import * as tslib from 'typescript/lib/tsserverlibrary';
 
 describe('Printer', () => {
@@ -304,11 +304,15 @@ describe('Printer', () => {
         TEST_FILENAME
       );
 
-      expect(printed).toBe(`const { 
-    property1,
-    property2,
-    property3
-} = variable;`);
+      const expected = withoutIndent`
+        const {
+            property1,
+            property2,
+            property3
+        } = variable;
+      `
+
+      expect(printed).toBe(expected);
     });
   });
 
