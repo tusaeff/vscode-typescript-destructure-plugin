@@ -1,8 +1,9 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { findChildContainingPosition, positionOrRangeToNumber } from './utils';
-import { availableRefactors } from './refactors';
+import { Refactor } from './common/Refactor';
 
 export function getApplicableRefactors(
+  availableRefactors: Refactor[],
   info: tslib.server.PluginCreateInfo,
   fileName: string,
   positionOrRange: tslib.TextRange | number
@@ -29,6 +30,7 @@ export function getApplicableRefactors(
 }
 
 export function getEditForRefactors(
+  availableRefactors: Refactor[],
   fileName: string,
   formatOptions: tslib.FormatCodeSettings,
   positionOrRange: number | tslib.TextRange,

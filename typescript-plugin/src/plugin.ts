@@ -6,7 +6,7 @@ function init(modules: { typescript: typeof tslib }) {
   const ts = modules.typescript;
 
   function create(info: tslib.server.PluginCreateInfo) {
-    initRefactors(info);
+    const availableRefactors = initRefactors(info);
 
     const proxy: ts.LanguageService = Object.create(null);
     for (let k of Object.keys(info.languageService) as Array<
@@ -30,7 +30,7 @@ function init(modules: { typescript: typeof tslib }) {
         ) || [];
 
       return defaultRefactors.concat(
-        getApplicableRefactors(info, fileName, positionOrRange)
+        getApplicableRefactors(availableRefactors, info, fileName, positionOrRange)
       );
     };
 
@@ -53,6 +53,7 @@ function init(modules: { typescript: typeof tslib }) {
 
       return (
         getEditForRefactors(
+          availableRefactors,
           fileName,
           formatOptions,
           positionOrRange,
