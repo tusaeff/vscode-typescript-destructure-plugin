@@ -119,8 +119,6 @@ export class Printer {
   ) {
     const { dotDotDotToken, propertyName, name, initializer } = node;
 
-    console.log([dotDotDotToken, propertyName, name, initializer]);
-
     const printedName = this.printNodeWithIndentation(
       name,
       { base: indentation.base, indentStart: false },
