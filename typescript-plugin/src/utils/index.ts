@@ -1,6 +1,5 @@
 export * from './can-be-destructured';
 export * from './create-object-binding-pattern-for-type';
-export * from './create-text-edit';
 export * from './find-function-like-parent';
 export * from './find-nearest-parent-by-guards';
 export * from './get-node-by-location';

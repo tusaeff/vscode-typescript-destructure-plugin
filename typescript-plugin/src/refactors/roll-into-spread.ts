@@ -1,7 +1,8 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { Refactor, ERefactorKind } from '../common/Refactor';
-import { createTextEdit, findAllNodesInRange } from '../utils';
+import { findAllNodesInRange } from '../utils';
 import { Printer } from '../common/printer';
+import { TextChanger } from '../common/changer';
 
 const hasDotDotDotToken = (node: tslib.Node): node is tslib.BindingElement => {
   return (
@@ -52,6 +53,7 @@ export class RollIntoSpread extends Refactor {
     const sourceFile = program && program.getSourceFile(fileName);
 
     const printer = new Printer(this.info, formatOptions);
+    const changer = new TextChanger(this.info, formatOptions);
 
     if (!sourceFile || typeof positionOrRange === 'number') {
       return;
@@ -95,6 +97,6 @@ export class RollIntoSpread extends Refactor {
       return;
     }
 
-    return createTextEdit(fileName, parent, ` ${newText}`);
+    return changer.createTextEdit(fileName, parent, ` ${newText}`);
   }
 }

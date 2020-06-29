@@ -1,5 +1,5 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
-import { createTextEdit } from '../utils';
+import { positionOrRangeToRange } from '../utils';
 import { Printer } from './printer';
 
 export class TextChanger {
@@ -20,7 +20,6 @@ export class TextChanger {
   ) {
     const indentation = this.getNodeIndentation(nodeToReplace, fileName);
     const { pos, end } = nodeToReplace;
-    
 
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
@@ -28,7 +27,7 @@ export class TextChanger {
       fileName
     );
 
-    return createTextEdit(
+    return this.createTextEdit(
       fileName,
       { pos: options.incrementPos ? pos + 1 : pos, end },
       printedNode
@@ -45,7 +44,6 @@ export class TextChanger {
   ) {
     const indentation = this.getNodeIndentation(nodeToReplace, fileName);
     const { pos, end } = nodeToReplace;
-    
 
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
@@ -53,7 +51,7 @@ export class TextChanger {
       fileName
     );
 
-    return createTextEdit(
+    return this.createTextEdit(
       fileName,
       { pos: options.incrementPos ? pos + 1 : pos, end },
       printedNode
@@ -78,7 +76,7 @@ export class TextChanger {
       fileName
     );
 
-    return createTextEdit(fileName, { pos: end, end }, '\n' + printedNode);
+    return this.createTextEdit(fileName, { pos: end, end }, '\n' + printedNode);
   }
 
   // TODO: handle case with no anchorNode providen
@@ -99,7 +97,7 @@ export class TextChanger {
       fileName
     );
 
-    return createTextEdit(fileName, { pos: pos, end: pos }, '\n' + printedNode);
+    return this.createTextEdit(fileName, { pos: pos, end: pos }, '\n' + printedNode);
   }
 
   public getNodeIndentation(node: tslib.Node, fileName: string) {
@@ -111,5 +109,29 @@ export class TextChanger {
       end,
       this.formatOptions
     );
+  }
+
+  public createTextEdit(
+    fileName: string,
+    positionOrRange: number | tslib.TextRange,
+    newText: string
+  ) {
+    const range = positionOrRangeToRange(positionOrRange);
+
+    return {
+      edits: [
+        {
+          fileName,
+          textChanges: [
+            {
+              span: { start: range.pos, length: range.end - range.pos },
+              newText,
+            },
+          ],
+        },
+      ],
+      renameFilename: undefined,
+      renameLocation: undefined,
+    };
   }
 }
