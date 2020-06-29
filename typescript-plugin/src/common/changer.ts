@@ -1,5 +1,5 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
-import { positionOrRangeToRange } from '../utils';
+import { positionOrRangeToRange, getLineIndentation } from '../utils';
 import { Printer } from './printer';
 
 export class TextChanger {
@@ -21,16 +21,22 @@ export class TextChanger {
     const indentation = this.getNodeIndentation(nodeToReplace, fileName);
     const { pos, end } = nodeToReplace;
 
+    const [firstLine] = this.getNodeLines(fileName, nodeToReplace);
+    // when we replace node we want to keep same indentation as it has
+    const firstLineIndentantation = firstLine
+      ? getLineIndentation(firstLine)
+      : 0;
+
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
       fileName,
-      { indentStart: false, base: indentation },
+      { indentStart: false, base: indentation }
     );
 
     return this.createTextEdit(
       fileName,
       { pos: options.incrementPos ? pos + 1 : pos, end },
-      printedNode
+      `${this.printer.getIndentationAsString(firstLineIndentantation)}${printedNode}`
     );
   }
 
@@ -48,7 +54,7 @@ export class TextChanger {
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
       fileName,
-      { indentStart: true, base: indentation },
+      { indentStart: true, base: indentation }
     );
 
     return this.createTextEdit(
@@ -73,7 +79,7 @@ export class TextChanger {
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
       fileName,
-      { indentStart: true, base: indentation },
+      { indentStart: true, base: indentation }
     );
 
     return this.createTextEdit(fileName, { pos: end, end }, '\n' + printedNode);
@@ -94,10 +100,14 @@ export class TextChanger {
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
       fileName,
-      { indentStart: true, base: indentation },
+      { indentStart: true, base: indentation }
     );
 
-    return this.createTextEdit(fileName, { pos: pos, end: pos }, '\n' + printedNode);
+    return this.createTextEdit(
+      fileName,
+      { pos: pos, end: pos },
+      '\n' + printedNode
+    );
   }
 
   public getNodeIndentation(node: tslib.Node, fileName: string) {
@@ -133,5 +143,34 @@ export class TextChanger {
       renameFilename: undefined,
       renameLocation: undefined,
     };
+  }
+
+  /**
+   * 
+   * @param fileName 
+   * @param node 
+   * @returns All lines of the file that relate to the passed node
+   */
+  protected getNodeLines(fileName: string, node: tslib.Node) {
+    const program = this.info.languageService.getProgram();
+    const sourceFile = program?.getSourceFile(fileName);
+
+    const fullText = sourceFile?.getText();
+    const lines = fullText?.split('\n');
+    const { pos, end } = node;
+
+    return lines?.reduce<{ charCounter: number; nodeLines: string[] }>(
+      ({ charCounter, nodeLines }, line) => {
+        if (charCounter >= pos && charCounter <= end) {
+          nodeLines.push(line);
+        }
+
+        return {
+          charCounter: charCounter + line.length,
+          nodeLines,
+        };
+      },
+      { charCounter: 0, nodeLines: [] }
+    ).nodeLines || [];
   }
 }

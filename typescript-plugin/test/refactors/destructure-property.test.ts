@@ -2,6 +2,7 @@ import {
   file,
   canBeAppliedAtSelection,
   applyAtSelection,
+  withoutIndent,
 } from '../framework';
 import { Refactor } from '../../src/common/refactor';
 import { DestructureProperty } from '../../src/refactors/destructure-property';
@@ -34,13 +35,31 @@ describe('Destructure object property', () => {
     expect(Boolean(canBeAppliedAtSelection(refactor, mock))).toBe(false);
   });
 
-  it('Is valid transformation', () => {
+  it('Performs valid transformation', () => {
     const mock = file`
       const { #nestedProperty# } = { nestedProperty: { nestedValue: 'value' } };
     `;
 
     const expected = `
       const { nestedProperty: { nestedValue } } = { nestedProperty: { nestedValue: 'value' } };
+    `;
+
+    expect(applyAtSelection(refactor, mock)?.trim()).toBe(expected.trim());
+  });
+
+  it('Performs valid transformation with multiline objects', () => {
+    const mock = file`
+      const {
+        #nestedProperty#,
+        property2
+      } = { nestedProperty: { nestedValue: 'value' }, property2: 2 };
+    `;
+
+    const expected = withoutIndent`
+      const {
+        nestedProperty: { nestedValue },
+        property2
+      } = { nestedProperty: { nestedValue: 'value' }, property2: 2 };
     `;
 
     expect(applyAtSelection(refactor, mock)?.trim()).toBe(expected.trim());

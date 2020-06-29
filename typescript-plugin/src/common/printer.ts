@@ -264,7 +264,7 @@ export class Printer {
     ].join(joiner);
   }
 
-  protected getIndentationAsString(indentation: number) {
+  public getIndentationAsString(indentation: number) {
     return ' '.repeat(indentation);
   }
 
