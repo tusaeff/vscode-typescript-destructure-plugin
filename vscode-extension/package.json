@@ -1,8 +1,9 @@
 {
 	"name": "vscode-typescript-destructure-plugin",
 	"displayName": "Typescript Destructure",
-	"description": "",
-	"version": "0.0.1",
+	"description": "Provides a set of source actions which significantly simplify object destructuring",
+	"icon": "logo.png",
+	"version": "0.0.5",
 	"publisher": "tusaeff",
 	"repository": {
 		"type": "git",
