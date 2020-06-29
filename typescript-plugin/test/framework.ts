@@ -1,21 +1,22 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { nanoid } from 'nanoid';
 import { Refactor } from '../src/common/refactor';
-import { findChildContainingPosition, positionOrRangeToNumber } from '../src/utils';
+import {
+  findChildContainingPosition,
+  positionOrRangeToNumber,
+} from '../src/utils';
 
 export const TEST_FILENAME = 'test.ts';
 
 export class LanguageServiceHostMock implements tslib.LanguageServiceHost {
-  public files: MockFile[] = [
-    new MockFile(TEST_FILENAME, ''),
-  ];
+  public files: MockFile[] = [new MockFile(TEST_FILENAME, '')];
 
   getCompilationSettings() {
     return {};
   }
 
   getScriptFileNames() {
-    return [...this.files.map(f => f.name)];
+    return [...this.files.map((f) => f.name)];
   }
 
   getScriptVersion() {
@@ -23,7 +24,7 @@ export class LanguageServiceHostMock implements tslib.LanguageServiceHost {
   }
 
   getScriptSnapshot(fileName: string) {
-    return this.files.find(file => file.name === fileName);
+    return this.files.find((file) => file.name === fileName);
   }
 
   getCurrentDirectory() {
@@ -36,15 +37,14 @@ export class LanguageServiceHostMock implements tslib.LanguageServiceHost {
 }
 
 export class MockFile {
-  constructor(
-    public name: string,
-    public text: string,
-  ) {}
+  constructor(public name: string, public text: string) {}
 
   public selectionSymbol = '#';
 
   getText(start: number, end: number): string {
-    return this.text.slice(start, end).replace(new RegExp(this.selectionSymbol, 'g'), '');
+    return this.text
+      .slice(start, end)
+      .replace(new RegExp(this.selectionSymbol, 'g'), '');
   }
 
   getLength() {
@@ -59,7 +59,7 @@ export class MockFile {
     const [start, end] = [
       this.text.indexOf(this.selectionSymbol),
       this.text.lastIndexOf(this.selectionSymbol),
-    ]
+    ];
 
     // if (start === -1) {
     //   return undefined;
@@ -78,37 +78,36 @@ export class MockFile {
 
 export class Framework {
   public languageServiceHost = new LanguageServiceHostMock();
-  public languageService = tslib.createLanguageService(this.languageServiceHost);
+  public languageService = tslib.createLanguageService(
+    this.languageServiceHost
+  );
 
   addFile(file: MockFile) {
     this.languageServiceHost.files.push(file);
   }
 
   removeFile(file: MockFile) {
-    this.languageServiceHost.files.filter(f => f !== file);
+    this.languageServiceHost.files.filter((f) => f !== file);
   }
 
   flushFiles() {
-    this.languageServiceHost.files.filter(f => f.name === TEST_FILENAME);
+    this.languageServiceHost.files.filter((f) => f.name === TEST_FILENAME);
   }
 
   getPluginCreateInfo(): tslib.server.PluginCreateInfo {
-    const {
-      languageService,
-      languageServiceHost,
-    } = this;
+    const { languageService, languageServiceHost } = this;
 
     return {
       languageService,
       languageServiceHost,
-    } as any
+    } as any;
   }
 }
 
 let framework: Framework | null = null;
 
 export function initFramework(): Framework {
-  framework = new Framework;
+  framework = new Framework();
 
   return framework;
 }
@@ -121,24 +120,54 @@ export const getPluginCreateInfo = (): tslib.server.PluginCreateInfo => {
     languageService,
     languageServiceHost,
   } as any;
-}
+};
 
 export const file = (strings: TemplateStringsArray, ...values: any[]) => {
   const text = strings.map((s, index) => s + (values[index] || '')).join('');
   const name = nanoid() + '.ts';
 
-  const mockFile = new MockFile(name, text);
+  const mockFile = new MockFile(name, withoutIndentFn(text));
 
   if (framework) {
     framework.addFile(mockFile);
   }
 
   return mockFile;
+};
+
+export const withoutIndentFn = (text: string) => {
+  const lines = text.split('\n');
+  const baseIndent = calculateBaseIndent(lines);
+
+  return lines
+    .map((line) => line.slice(baseIndent))
+    .join('\n')
+    .trim();
 }
 
+export const withoutIndent = (
+  strings: TemplateStringsArray,
+  ...values: any[]
+) => {
+  const text = strings.map((s, index) => s + (values[index] || '')).join('');
+
+  return withoutIndentFn(text);
+};
+
+const calculateBaseIndent = (lines: string[]) => {
+  return lines.reduce((acc, line) => {
+    let spacesCount = line.search(/\S/);
+
+    if (spacesCount === -1 || acc < spacesCount) return acc;
+
+    if (spacesCount <= acc) return spacesCount;
+
+    return acc;
+  }, Infinity);
+};
 
 export const canBeAppliedAtSelection = (refactor: Refactor, file: MockFile) => {
-  const info = framework!.getPluginCreateInfo()
+  const info = framework!.getPluginCreateInfo();
   const program = info.languageService.getProgram();
   const sourceFile = program?.getSourceFile(file.name);
 
@@ -146,14 +175,13 @@ export const canBeAppliedAtSelection = (refactor: Refactor, file: MockFile) => {
     return;
   }
 
-  const node = findChildContainingPosition(sourceFile, positionOrRangeToNumber(file.getSelection()));
-
-  return refactor.canBeApplied(
-    node,
-    file.name,
-    file.getSelection()
+  const node = findChildContainingPosition(
+    sourceFile,
+    positionOrRangeToNumber(file.getSelection())
   );
-}
+
+  return refactor.canBeApplied(node, file.name, file.getSelection());
+};
 
 export const applyAtSelection = (refactor: Refactor, file: MockFile) => {
   const edit = refactor.apply(
@@ -162,7 +190,7 @@ export const applyAtSelection = (refactor: Refactor, file: MockFile) => {
     file.getSelection(),
     refactor.name,
     refactor.name,
-    undefined,
+    undefined
   );
 
   if (!edit) {
@@ -173,12 +201,14 @@ export const applyAtSelection = (refactor: Refactor, file: MockFile) => {
     let text = file.getText(0, file.getLength());
 
     edit.edits.forEach((e) => {
-      e.textChanges.forEach(c => {
-        text = text.slice(0, c.span.start) + c.newText + text.slice(c.span.start + c.span.length);
-      })
-    })
+      e.textChanges.forEach((c) => {
+        text =
+          text.slice(0, c.span.start) +
+          c.newText +
+          text.slice(c.span.start + c.span.length);
+      });
+    });
 
-
-    return text;  
+    return text;
   }
-}
+};
