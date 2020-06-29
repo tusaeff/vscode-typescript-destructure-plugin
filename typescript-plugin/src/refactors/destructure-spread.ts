@@ -1,10 +1,6 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { Refactor, ERefactorKind } from '../common/Refactor';
-import {
-  getNodeByLocation,
-  getNodeType,
-  canBeDestructured,
-} from '../utils';
+import { getNodeByLocation, getNodeType, canBeDestructured } from '../utils';
 import { TextChanger } from '../common/changer';
 
 const getElements = (node: tslib.Node) => {
@@ -63,7 +59,10 @@ export class DestructureSpread extends Refactor {
     const { bindingElement, dotDotToken, identifier } = getElements(node);
 
     return (
-      bindingElement && dotDotToken && canBeDestructured(this.info, identifier)
+      bindingElement &&
+      dotDotToken &&
+      tslib.isObjectBindingPattern(bindingElement.parent) &&
+      canBeDestructured(this.info, identifier)
     );
   }
 
