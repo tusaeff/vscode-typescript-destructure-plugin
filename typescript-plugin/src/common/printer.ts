@@ -17,54 +17,53 @@ export class Printer {
 
   public printNodeWithIndentation(
     node: tslib.Node,
-    indentation: IIndentationOptions,
-    fileName: string
+    fileName: string,
+    indentation: IIndentationOptions = { base: 0, indentStart: false }
   ): string {
     switch (node.kind) {
       case tslib.SyntaxKind.ObjectBindingPattern:
         return this.printObjectBindingPattern(
           node as tslib.ObjectBindingPattern,
-          indentation,
-          fileName
+          fileName,
+          indentation
         );
 
       case tslib.SyntaxKind.BindingElement:
         return this.printBindingElement(
           node as tslib.BindingElement,
-          indentation,
-          fileName
+          fileName,
+          indentation
         );
 
       case tslib.SyntaxKind.ArrowFunction:
         return this.printArrowFunction(
           node as tslib.ArrowFunction,
-          indentation,
-          fileName
+          fileName,
+          indentation
         );
 
       case tslib.SyntaxKind.Block:
-        return this.printBlock(node as tslib.Block, indentation, fileName);
+        return this.printBlock(node as tslib.Block, fileName, indentation);
 
       default:
-        return this.fallbackPrint(node, indentation, fileName);
+        return this.fallbackPrint(node, fileName, indentation);
     }
   }
 
   public printNodeWithoutIndentation(node: tslib.Node, fileName: string) {
-    return this.printNodeWithIndentation(node, { base: 0, indentStart: false }, fileName);
+    return this.printNodeWithIndentation(node, fileName);
   }
 
   protected printBlock(
     node: tslib.Block,
-    indentation: IIndentationOptions,
-    fileName: string
+    fileName: string,
+    indentation: IIndentationOptions = { base: 0, indentStart: false }
   ) {
     const printedStatements = node.statements.map((s) =>
-      this.printNodeWithIndentation(
-        s,
-        { indentStart: true, base: this.incrementIndentation(indentation.base) },
-        fileName
-      )
+      this.printNodeWithIndentation(s, fileName, {
+        indentStart: true,
+        base: this.incrementIndentation(indentation.base),
+      })
     );
 
     return [
@@ -76,8 +75,8 @@ export class Printer {
 
   protected printArrowFunction(
     node: tslib.ArrowFunction,
-    indentation: IIndentationOptions,
-    fileName: string
+    fileName: string,
+    indentation: IIndentationOptions = { base: 0, indentStart: false }
   ) {
     const {
       typeParameters,
@@ -97,52 +96,47 @@ export class Printer {
       type && this.printNodeWithoutIndentation(type, fileName);
 
     return [
-      indentation.indentStart ? this.getIndentationAsString(indentation.base) : '',
+      indentation.indentStart
+        ? this.getIndentationAsString(indentation.base)
+        : '',
       typeParameters && `<${generics?.join(', ')}>`,
       args && `(${args.join(', ')})`,
       type && `: ${printedType}`,
       ' ',
       equalsGreaterThanToken && '=>',
       ' ',
-      this.printNodeWithIndentation(
-        body,
-        { indentStart: false, base: indentation.base },
-        fileName
-      ),
+      this.printNodeWithIndentation(body, fileName, {
+        indentStart: false,
+        base: indentation.base,
+      }),
     ].join('');
   }
 
   protected printBindingElement(
     node: tslib.BindingElement,
-    indentation: IIndentationOptions,
-    fileName: string
+    fileName: string,
+    indentation: IIndentationOptions = { base: 0, indentStart: false }
   ) {
     const { dotDotDotToken, propertyName, name, initializer } = node;
 
-    const printedName = this.printNodeWithIndentation(
-      name,
-      { base: indentation.base, indentStart: false },
-      fileName
-    );
+    const printedName = this.printNodeWithIndentation(name, fileName, {
+      base: indentation.base,
+      indentStart: false,
+    });
 
     const printedPropertyName =
       propertyName &&
-      this.printNodeWithIndentation(
-        propertyName,
-        { base: indentation.base, indentStart: false },
-        fileName
-      );
+      this.printNodeWithIndentation(propertyName, fileName, {
+        base: indentation.base,
+        indentStart: false,
+      });
 
     const printedInitializer =
       initializer &&
-      this.printNodeWithIndentation(
-        initializer,
-        {
-          indentStart: false,
-          base: indentation.base,
-        },
-        fileName
-      );
+      this.printNodeWithIndentation(initializer, fileName, {
+        indentStart: false,
+        base: indentation.base,
+      });
 
     return [
       indentation.indentStart && this.getIndentationAsString(indentation.base),
@@ -157,27 +151,27 @@ export class Printer {
 
   protected printObjectBindingPattern(
     node: tslib.ObjectBindingPattern,
-    indentation: IIndentationOptions,
-    fileName: string
+    fileName: string,
+    indentation: IIndentationOptions = { base: 0, indentStart: false }
   ) {
     const { elements } = node;
     const shouldAddNewLine = elements.length > 1;
 
     const printedElements = node.elements.map((bindingElement) =>
-      this.printNodeWithIndentation(
-        bindingElement,
-        {
-          base: this.incrementIndentation(indentation.base),
-          indentStart: shouldAddNewLine,
-        },
-        fileName
-      )
+      this.printNodeWithIndentation(bindingElement, fileName, {
+        base: this.incrementIndentation(indentation.base),
+        indentStart: shouldAddNewLine,
+      })
     );
 
     const joiner = shouldAddNewLine ? '\n' : ' ';
 
     return [
-      `${indentation.indentStart ? this.getIndentationAsString(indentation.base) : ''}{`,
+      `${
+        indentation.indentStart
+          ? this.getIndentationAsString(indentation.base)
+          : ''
+      }{`,
       printedElements.join(`,${joiner}`),
       `${
         shouldAddNewLine ? this.getIndentationAsString(indentation.base) : ''
@@ -196,7 +190,11 @@ export class Printer {
     return indentation + indentSize;
   }
 
-  public fallbackPrint(node: tslib.Node, indentation: IIndentationOptions, fileName: string) {
+  public fallbackPrint(
+    node: tslib.Node,
+    fileName: string,
+    indentation: IIndentationOptions = { base: 0, indentStart: false }
+  ) {
     // console.warn(
     //   `Can't print an unknown node: ${node.kind}. Falling back to default tslib printer`
     // );
@@ -212,7 +210,9 @@ export class Printer {
       );
 
       if (indentation.indentStart) {
-        printedNode = `${this.getIndentationAsString(indentation.base)}${printedNode}`;
+        printedNode = `${this.getIndentationAsString(
+          indentation.base
+        )}${printedNode}`;
       }
 
       return printedNode;

@@ -23,8 +23,8 @@ export class TextChanger {
 
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
+      fileName,
       { indentStart: false, base: indentation },
-      fileName
     );
 
     return this.createTextEdit(
@@ -47,8 +47,8 @@ export class TextChanger {
 
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
+      fileName,
       { indentStart: true, base: indentation },
-      fileName
     );
 
     return this.createTextEdit(
@@ -72,8 +72,8 @@ export class TextChanger {
 
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
+      fileName,
       { indentStart: true, base: indentation },
-      fileName
     );
 
     return this.createTextEdit(fileName, { pos: end, end }, '\n' + printedNode);
@@ -93,8 +93,8 @@ export class TextChanger {
 
     const printedNode = this.printer.printNodeWithIndentation(
       nodeToInsert,
+      fileName,
       { indentStart: true, base: indentation },
-      fileName
     );
 
     return this.createTextEdit(fileName, { pos: pos, end: pos }, '\n' + printedNode);

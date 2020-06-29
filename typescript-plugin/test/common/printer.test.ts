@@ -17,9 +17,8 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
         TEST_FILENAME
       );
 
@@ -37,9 +36,8 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
         TEST_FILENAME
       );
 
@@ -58,9 +56,8 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
         TEST_FILENAME
       );
 
@@ -83,9 +80,8 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
         TEST_FILENAME
       );
 
@@ -105,8 +101,8 @@ describe('Printer', () => {
 
       const printed = printer.printNodeWithIndentation(
         tree,
+        TEST_FILENAME,
         { base: 4, indentStart: true },
-        TEST_FILENAME
       );
 
       expect(printed).toBe('    { property }');
@@ -137,9 +133,8 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
         TEST_FILENAME
       );
 
@@ -175,8 +170,8 @@ describe('Printer', () => {
 
       const printed = printer.printNodeWithIndentation(
         tree,
+        TEST_FILENAME,
         { base: 4, indentStart: true },
-        TEST_FILENAME
       );
 
       expect(printed).toBe(`    {
@@ -207,10 +202,9 @@ describe('Printer', () => {
         )
       );
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
-        TEST_FILENAME
+        TEST_FILENAME,
       );
 
       expect(printed).toBe('const variable: true = 2 === 2;');
@@ -234,9 +228,8 @@ describe('Printer', () => {
         )
       );
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
         TEST_FILENAME
       );
 
@@ -264,9 +257,8 @@ describe('Printer', () => {
         )
       );
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
         TEST_FILENAME
       );
 
@@ -307,9 +299,8 @@ describe('Printer', () => {
         )
       );
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
         TEST_FILENAME
       );
 
@@ -341,10 +332,9 @@ describe('Printer', () => {
         tslib.createPostfixIncrement(tslib.createIdentifier('a'))
       );
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
-        TEST_FILENAME
+        TEST_FILENAME,
       );
 
       expect(printed).toBe(`(a: number): number => a++`);
@@ -371,9 +361,8 @@ describe('Printer', () => {
         ])
       );
 
-      const printed = printer.printNodeWithIndentation(
+      const printed = printer.printNodeWithoutIndentation(
         tree,
-        { base: 0, indentStart: false },
         TEST_FILENAME
       );
 
@@ -405,8 +394,8 @@ describe('Printer', () => {
 
       const printed = printer.printNodeWithIndentation(
         tree,
+        TEST_FILENAME,
         { base: 4, indentStart: true },
-        TEST_FILENAME
       );
 
       expect(printed).toBe(`    (a: number): number => {
@@ -414,8 +403,4 @@ describe('Printer', () => {
     }`);
     });
   });
-
-  // it('Prints arrow function', (done) => {
-  //   done.fail();
-  // })
 });
