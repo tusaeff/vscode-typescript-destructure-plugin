@@ -3,13 +3,9 @@ import { Refactor, ERefactorKind } from '../common/refactor';
 import {
   getNodeByLocation,
   getNodeType,
-  createTextEdit,
-  isDestructurable,
+  canBeDestructured,
   createObjectBindingPatternForType,
   findFunctionLikeParent,
-  insertStatementAfter,
-  replaceStatement,
-  printNode,
   findNearestParentByGuards,
 } from '../utils';
 import { TextChanger } from '../common/changer';
@@ -106,7 +102,7 @@ export class DestructureToConstant extends Refactor {
   canBeApplied(node?: tslib.Node) {
     return (
       node &&
-      isDestructurable(this.info, node) &&
+      canBeDestructured(this.info, node) &&
       !tslib.isTypeReferenceNode(node.parent)
     );
   }

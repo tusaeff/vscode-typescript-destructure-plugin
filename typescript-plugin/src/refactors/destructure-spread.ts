@@ -3,10 +3,7 @@ import { Refactor, ERefactorKind } from '../common/Refactor';
 import {
   getNodeByLocation,
   getNodeType,
-  getTypeDestructuring,
-  createTextEdit,
-  isDestructurable,
-  printNode,
+  canBeDestructured,
 } from '../utils';
 import { TextChanger } from '../common/changer';
 
@@ -66,7 +63,7 @@ export class DestructureSpread extends Refactor {
     const { bindingElement, dotDotToken, identifier } = getElements(node);
 
     return (
-      bindingElement && dotDotToken && isDestructurable(this.info, identifier)
+      bindingElement && dotDotToken && canBeDestructured(this.info, identifier)
     );
   }
 

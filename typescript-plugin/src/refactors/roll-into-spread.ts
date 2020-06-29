@@ -1,10 +1,7 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { Refactor, ERefactorKind } from '../common/Refactor';
-import {
-  printNode,
-  createTextEdit,
-  findAllNodesInRange,
-} from '../utils';
+import { createTextEdit, findAllNodesInRange } from '../utils';
+import { Printer } from '../common/printer';
 
 const hasDotDotDotToken = (node: tslib.Node): node is tslib.BindingElement => {
   return (
@@ -54,6 +51,8 @@ export class RollIntoSpread extends Refactor {
     const program = this.info.languageService.getProgram();
     const sourceFile = program && program.getSourceFile(fileName);
 
+    const printer = new Printer(this.info, formatOptions);
+
     if (!sourceFile || typeof positionOrRange === 'number') {
       return;
     }
@@ -67,7 +66,7 @@ export class RollIntoSpread extends Refactor {
     const parent = selectedNodes[0].parent as tslib.ObjectBindingPattern;
     const bindingElements: tslib.BindingElement[] = [];
 
-    parent.forEachChild(node => {
+    parent.forEachChild((node) => {
       bindingElements.push(node as tslib.BindingElement);
     });
 
@@ -86,7 +85,11 @@ export class RollIntoSpread extends Refactor {
       spreadNode,
     ]);
 
-    const newText = printNode(this.info, fileName, updatedNode);
+    const newText = printer.fallbackPrint(
+      updatedNode,
+      { base: 0, indentStart: false },
+      fileName
+    );
 
     if (!newText) {
       return;

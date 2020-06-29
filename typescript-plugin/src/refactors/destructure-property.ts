@@ -3,19 +3,15 @@ import { Refactor, ERefactorKind } from '../common/Refactor';
 import {
   getNodeByLocation,
   getNodeType,
-  getTypeDestructuring,
-  createTextEdit,
-  isDestructurable,
-  createObjectBindingPatternForType
+  canBeDestructured,
+  createObjectBindingPatternForType,
 } from '../utils';
 import { TextChanger } from '../common/changer';
 
 const isPartOfSpread = (node: tslib.Node) => {
-  return (
-    node.parent
-      .getChildren()
-      .some((n) => n.kind === tslib.SyntaxKind.DotDotDotToken)
-  );
+  return node.parent
+    .getChildren()
+    .some((n) => n.kind === tslib.SyntaxKind.DotDotDotToken);
 };
 
 export class DestructureProperty extends Refactor {
@@ -29,11 +25,13 @@ export class DestructureProperty extends Refactor {
   ];
 
   canBeApplied(node?: tslib.Node) {
-    return node
-      && tslib.isIdentifier(node)
-      && tslib.isBindingElement(node.parent)
-      && !isPartOfSpread(node)
-      && isDestructurable(this.info, node);
+    return (
+      node &&
+      tslib.isIdentifier(node) &&
+      tslib.isBindingElement(node.parent) &&
+      !isPartOfSpread(node) &&
+      canBeDestructured(this.info, node)
+    );
   }
 
   apply(
@@ -57,11 +55,16 @@ export class DestructureProperty extends Refactor {
     const updatedBindingElement = tslib.updateBindingElement(
       oldBindingElement,
       undefined,
-      createObjectBindingPatternForType(type) as unknown as tslib.Identifier, // TODO: FIXME
+      (createObjectBindingPatternForType(type) as unknown) as tslib.Identifier, // TODO: FIXME
       oldBindingElement.name,
-      undefined,
-    )
+      undefined
+    );
 
-    return textChanger.replaceNode(oldBindingElement, updatedBindingElement, fileName, { incrementPos: true });
+    return textChanger.replaceNode(
+      oldBindingElement,
+      updatedBindingElement,
+      fileName,
+      { incrementPos: true }
+    );
   }
 }

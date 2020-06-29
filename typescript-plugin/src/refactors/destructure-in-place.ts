@@ -4,9 +4,7 @@ import {
   getNodeByLocation,
   getNodeType,
   createObjectBindingPatternForType,
-  printNode,
-  createTextEdit,
-  isDestructurable,
+  canBeDestructured,
 } from '../utils';
 import { TextChanger } from '../common/changer';
 
@@ -23,7 +21,7 @@ export class DestructureInPlace extends Refactor {
   canBeApplied(node?: tslib.Node) {
     return (
       node &&
-      isDestructurable(this.info, node) &&
+      canBeDestructured(this.info, node) &&
       tslib.isParameter(node.parent)
     );
   }

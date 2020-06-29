@@ -196,7 +196,7 @@ export class Printer {
     return indentation + indentSize;
   }
 
-  protected fallbackPrint(node: tslib.Node, indentation: IIndentationOptions, fileName: string) {
+  public fallbackPrint(node: tslib.Node, indentation: IIndentationOptions, fileName: string) {
     // console.warn(
     //   `Can't print an unknown node: ${node.kind}. Falling back to default tslib printer`
     // );
