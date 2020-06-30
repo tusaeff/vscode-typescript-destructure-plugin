@@ -11,20 +11,23 @@ There is a common style of coding in Javascript/Typescript when you get an objec
 
 This plugin is designed to help you save time spent copying properties from the object.
 
-## How to use it
+## How to use
 Almost all source actions (except for the [collapse into rest operator](#collapse-into-rest-operator)) provided by the plugin become available when you set the cursor on or highlight the variable which can be destructured. When this condition is met, a lightbulb will appear next to the desired line (check the `editor.lightbulb.enabled` setting) - clicking on it will open the refactorings and source actions menu, where you can pick the desired one. Another way to get this menu is to use `cmd + .` (on mac) or `ctrl + .` (on win) shortcut.
 
-*Note about complex types*: destructuring source actions are only available for object types, so if your variable has, for example, a union type not all the members of which can be destructured, then source action will not appear. In this case, you should help the compiler by removing unnecessary types from the union:
-
+*Note about union types*: destructuring source actions are not available for union types since it' s impossible to understand what type of union you need to destructure. In this case, you should help the compiler by removing unnecessary types from the union:
 ```typescript
-type SomeUnion = { a: 'b' } | number | undefined;
+type ObjectA = { a: '1' }
+type ObjectB = { b: '2' }
+type SomeUnion = ObjectA | ObjectB;
 
-//  ↓ source action is unavailable here since 
-//  ↓ number and undefined cannot be destructured
+const isA = (obj): obj is ObjectA => !!obj.a;
+
+//  ↓ source action is unavailable here since
+//  ↓ we can't determine one type for structuring
 let x: SomeUnion;
 
-if (x && typeof x !== number) {
-// ↓ we've removed the unwanted types from the union,
+if (isA(x)) {
+// ↓ x now has a concrete type,
 // ↓ so source action is accessible now
    x;
 }
