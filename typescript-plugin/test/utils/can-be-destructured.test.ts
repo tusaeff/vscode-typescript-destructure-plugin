@@ -52,7 +52,7 @@ describe('canBeDestructured', () => {
     expect(nodeAtSelectionCanBeDestructured(mock)).toBe(true);
   })
 
-  it.only('Array cannot be destructured', () => {
+  it.skip('Array cannot be destructured', () => {
     const mock = file`
       function(p: number[]) {
         #p#
