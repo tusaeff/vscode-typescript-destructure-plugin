@@ -4,6 +4,10 @@ All notable changes to the "vscode-extension" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.6] - 30.06.2020
+Added
+- Multiple bugfixes
+
 ## [0.0.1-alpha.3] - 29.06.2020
 Added
 - Readme with descriptions of available features
