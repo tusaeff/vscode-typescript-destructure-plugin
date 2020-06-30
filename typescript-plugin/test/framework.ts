@@ -76,6 +76,7 @@ export class MockFile {
   }
 }
 
+// TODO: fix bug with wrong types if not flushing files
 export class Framework {
   public languageServiceHost = new LanguageServiceHostMock();
   public languageService = tslib.createLanguageService(
@@ -87,11 +88,11 @@ export class Framework {
   }
 
   removeFile(file: MockFile) {
-    this.languageServiceHost.files.filter((f) => f !== file);
+    this.languageServiceHost.files = this.languageServiceHost.files.filter((f) => f !== file);
   }
 
   flushFiles() {
-    this.languageServiceHost.files.filter((f) => f.name === TEST_FILENAME);
+    this.languageServiceHost.files = this.languageServiceHost.files.filter((f) => f.name === TEST_FILENAME);
   }
 
   getPluginCreateInfo(): tslib.server.PluginCreateInfo {
