@@ -1,8 +1,8 @@
 {
   "name": "typescript-destructure-plugin",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.1-alpha.4",
   "description": "",
-  "main": "./out/src/plugin.js",
+  "main": "./out/plugin.js",
   "files": [
     "out/**/*"
   ],
