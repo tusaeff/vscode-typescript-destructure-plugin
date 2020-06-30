@@ -3,6 +3,11 @@
     "typescript-plugin",
     "vscode-extension"
   ],
+  "command": {
+    "version": {
+      "message": ":bookmark: Release %s"
+    }
+  },
   "publish": {
     "message": ":bookmark: Release v%s",
     "version": {
