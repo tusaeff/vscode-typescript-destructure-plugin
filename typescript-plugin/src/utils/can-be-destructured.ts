@@ -22,9 +22,11 @@ export function canBeDestructured(
 
   const isObject = type && (type as tslib.ObjectType).objectFlags; // TODO: validate work with objectFlags
 
+  const isUnion = type && type.isUnion();
+
   const isContextForbidden =
     !node ||
     contextsKindsWithForbiddenDestructure.indexOf(node.parent.kind) !== -1;
 
-  return isIdentifier && isObject && !isContextForbidden;
+  return Boolean(isIdentifier && isObject && !isContextForbidden && !isUnion);
 }
