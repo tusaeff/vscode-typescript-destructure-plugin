@@ -166,7 +166,8 @@ export class TextChanger {
         }
 
         return {
-          charCounter: charCounter + line.length,
+          // append one symbol to line length as replacement for removed line break
+          charCounter: charCounter + line.length + 1,
           nodeLines,
         };
       },

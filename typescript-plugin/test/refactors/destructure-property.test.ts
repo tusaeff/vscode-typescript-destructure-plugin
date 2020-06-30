@@ -64,4 +64,22 @@ describe('Destructure object property', () => {
 
     expect(applyAtSelection(refactor, mock)?.trim()).toBe(expected.trim());
   });
+
+  it('Performs valid transformation with last property in multiline objects', () => {
+    const mock = file`
+      const {
+        property2,
+        #nestedProperty#
+      } = { nestedProperty: { nestedValue: 'value' }, property2: 2 };
+    `;
+
+    const expected = withoutIndent`
+      const {
+        property2,
+        nestedProperty: { nestedValue }
+      } = { nestedProperty: { nestedValue: 'value' }, property2: 2 };
+    `;
+
+    expect(applyAtSelection(refactor, mock)?.trim()).toBe(expected.trim());
+  });
 });
