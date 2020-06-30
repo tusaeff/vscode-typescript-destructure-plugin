@@ -1,6 +1,6 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { findChildContainingPosition, positionOrRangeToNumber } from './utils';
-import { Refactor } from './common/Refactor';
+import { Refactor } from './common/refactor';
 
 export function getApplicableRefactors(
   availableRefactors: Refactor[],

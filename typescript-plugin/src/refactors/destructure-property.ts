@@ -1,5 +1,5 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
-import { Refactor, ERefactorKind } from '../common/Refactor';
+import { Refactor, ERefactorKind } from '../common/refactor';
 import {
   getNodeByLocation,
   getNodeType,
