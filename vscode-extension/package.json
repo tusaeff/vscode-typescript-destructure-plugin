@@ -3,7 +3,7 @@
   "displayName": "Typescript Destructure",
   "description": "Provides a set of source actions which significantly simplify object destructuring",
   "icon": "logo.png",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "publisher": "tusaeff",
   "repository": {
     "type": "git",
