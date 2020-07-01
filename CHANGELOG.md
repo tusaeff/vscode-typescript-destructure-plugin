@@ -4,7 +4,7 @@ All notable changes to the "vscode-extension" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.0.8] - 1.07.2020
+## [0.0.9] - 1.07.2020
 Changed
 - Fixed VSCode Extension build
 
