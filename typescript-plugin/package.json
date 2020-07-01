@@ -2,19 +2,23 @@
   "name": "typescript-destructure-plugin",
   "version": "0.0.8",
   "description": "",
-  "main": "./out/plugin.js",
+  "main": "./dist/plugin.js",
   "files": [
-    "out/**/*"
+    "dist/**/*"
   ],
   "scripts": {
-    "prepublishOnly": "npm run compile",
+    "build": "webpack --mode development",
+    "watch": "webpack --mode development --watch",
+    "prepublishOnly": "npm run build",
     "test": "jest",
     "compile": "tsc -p ./",
-    "lint": "eslint src --ext ts",
-    "watch": "tsc -watch -p ./"
+    "lint": "eslint src --ext ts"
   },
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "typescript": "^3.9.5"
+  },
   "devDependencies": {
     "@babel/core": "^7.10.3",
     "@babel/generator": "^7.10.3",
@@ -30,6 +34,8 @@
     "jest": "^26.1.0",
     "nanoid": "^3.1.10",
     "ts-jest": "^26.1.1",
-    "typescript": "^3.9.5"
+    "ts-loader": "^7.0.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
   }
 }

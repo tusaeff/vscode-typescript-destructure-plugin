@@ -42,7 +42,7 @@ jobs:
           working-directory: ./typescript-plugin
 
       - name: Build
-        run: npm run compile
+        run: npm run build
 
       - name: Prepare Publish
         uses: actions/setup-node@v1
