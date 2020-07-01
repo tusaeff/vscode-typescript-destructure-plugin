@@ -15,7 +15,7 @@ const readPackageJSON = async (dirPath) => {
   );
 
   return JSON.parse(json);
-}
+};
 
 const writePackageJSON = async (dirPath, content) => {
   return writeFile(
@@ -23,18 +23,18 @@ const writePackageJSON = async (dirPath, content) => {
     JSON.stringify(content, null, '\t'),
     { encoding: 'utf-8' },
   );
-}
+};
 
 const updatePackageJSON = async (dirPath, update) => {
   const oldPackageJSON = await readPackageJSON(dirPath);
   
   return writePackageJSON(dirPath, merge(oldPackageJSON, update));
-}
+};
 
 const addPluginToExtensionDependencies = async () => {
   const plugin = await readPackageJSON('../typescript-plugin');
 
   return updatePackageJSON('./', { dependencies: { [plugin.name]: plugin.version } });
-}
+};
 
 addPluginToExtensionDependencies();

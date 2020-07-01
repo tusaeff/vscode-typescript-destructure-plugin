@@ -1,9 +1,28 @@
 {
   "scripts": {
-    "start": "npm run watch --prefix typescript-plugin"
+    "start": "npm run watch --prefix typescript-plugin",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "name": "vscode-typescript-plugin-template-2",
   "devDependencies": {
-    "lerna": "^3.22.1"
+    "@sinonjs/commons": "^1.8.0",
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0",
+    "eslint": "^6.8.0",
+    "eslint-config": "^0.3.0",
+    "husky": "^4.2.5",
+    "lerna": "^3.22.1",
+    "lint-staged": "^10.2.11",
+    "typescript": "^3.9.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.ts": "eslint --cache --fix"
   }
 }

@@ -5,7 +5,7 @@ async function main() {
   await Promise.all([
     copyFilesFromParentDir(),
     syncPluginVersion(),
-  ])
+  ]);
 }
 
 main();

@@ -28,14 +28,14 @@ const updateJSON = async (path, update) => {
   const oldJSON = await readJSON(path);
 
   const newContent =
-    typeof update == 'function'
+    typeof update === 'function'
       ? update(oldJSON)
       : merge(oldJSON, update);
 
   return writeJSON(path, newContent);
 };
 
-const makeNPMPackageUrl = (name, version) => `https://registry.npmjs.org/${name}/-/${name}-${version}.tgz`
+const makeNPMPackageUrl = (name, version) => `https://registry.npmjs.org/${name}/-/${name}-${version}.tgz`;
 
 const addPluginToExtensionDependencies = async () => {
   const plugin = await readJSON('../typescript-plugin/package.json');

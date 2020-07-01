@@ -8,10 +8,11 @@
     "plugins": [
         "@typescript-eslint"
     ],
+    "ignorePatterns": ["**/node_modules/*"],
     "rules": {
         "@typescript-eslint/class-name-casing": "warn",
         "@typescript-eslint/semi": "warn",
-        "curly": "warn",
+        "curly": "off",
         "eqeqeq": "warn",
         "no-throw-literal": "warn",
         "semi": "off"
