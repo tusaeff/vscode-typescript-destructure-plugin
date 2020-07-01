@@ -1,8 +1,4 @@
-import {
-  file,
-  canBeAppliedAtSelection,
-  applyAtSelection,
-} from '../framework';
+import { file, canBeAppliedAtSelection, applyAtSelection } from '../framework';
 import { Refactor } from '../../src/common/refactor';
 import { RollIntoSpread } from '../../src/refactors/roll-into-spread';
 import { setupRefactorTests } from './setupRefactorTests';
@@ -14,7 +10,7 @@ describe('Collapse into rest operator', () => {
 
   beforeEach(() => {
     refactor = ctx.refactor;
-  })
+  });
 
   it('Can be applied at object properties', () => {
     const mock = file`

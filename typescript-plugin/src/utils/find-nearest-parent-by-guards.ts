@@ -12,7 +12,10 @@ export function findNearestParentByGuards<S1 extends tslib.Node>(
 export function findNearestParentByGuards<
   S1 extends tslib.Node,
   S2 extends tslib.Node
->(node: tslib.Node, guards: [KindGuard<S1>, KindGuard<S2>]): undefined | S1 | S2;
+>(
+  node: tslib.Node,
+  guards: [KindGuard<S1>, KindGuard<S2>]
+): undefined | S1 | S2;
 
 export function findNearestParentByGuards<
   S1 extends tslib.Node,

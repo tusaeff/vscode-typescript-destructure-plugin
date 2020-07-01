@@ -12,7 +12,7 @@ export const initRefactors = (info: tslib.server.PluginCreateInfo) => {
     DestructureSpread,
     DestructureToConstant,
     RollIntoSpread,
-  ]
+  ];
 
   return availableRefactorsClasses.map((claz) => new claz(info));
-}
+};

@@ -8,7 +8,6 @@ export function positionOrRangeToRange(
     : positionOrRange;
 }
 
-
 export function positionOrRangeToNumber(
   positionOrRange: number | tslib.TextRange
 ): number {

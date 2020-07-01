@@ -15,7 +15,7 @@ describe('Create destructuring assignment', () => {
 
   beforeEach(() => {
     refactor = ctx.refactor;
-  })
+  });
 
   it('Can be applied at expression', () => {
     const mock = file`

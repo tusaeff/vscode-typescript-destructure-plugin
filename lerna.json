@@ -1,8 +1,5 @@
 {
-  "packages": [
-    "typescript-plugin",
-    "vscode-extension"
-  ],
+  "packages": ["typescript-plugin", "vscode-extension"],
   "command": {
     "version": {
       "message": ":bookmark: Release %s"

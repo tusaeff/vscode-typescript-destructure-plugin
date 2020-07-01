@@ -30,7 +30,12 @@ function init(modules: { typescript: typeof tslib }) {
         ) || [];
 
       return defaultRefactors.concat(
-        getApplicableRefactors(availableRefactors, info, fileName, positionOrRange)
+        getApplicableRefactors(
+          availableRefactors,
+          info,
+          fileName,
+          positionOrRange
+        )
       );
     };
 

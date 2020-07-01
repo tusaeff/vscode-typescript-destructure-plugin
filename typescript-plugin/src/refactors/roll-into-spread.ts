@@ -87,10 +87,7 @@ export class RollIntoSpread extends Refactor {
       spreadNode,
     ]);
 
-    const newText = printer.fallbackPrint(
-      updatedNode,
-      fileName
-    );
+    const newText = printer.fallbackPrint(updatedNode, fileName);
 
     if (!newText) {
       return;

@@ -15,8 +15,7 @@ describe('Destructure object property', () => {
 
   beforeEach(() => {
     refactor = ctx.refactor;
-  })
-
+  });
 
   it('Can be applied at object property', () => {
     const mock = file`

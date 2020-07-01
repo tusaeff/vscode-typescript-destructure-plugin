@@ -36,7 +36,9 @@ export class TextChanger {
     return this.createTextEdit(
       fileName,
       { pos: options.incrementPos ? pos + 1 : pos, end },
-      `${this.printer.getIndentationAsString(firstLineIndentantation)}${printedNode}`
+      `${this.printer.getIndentationAsString(
+        firstLineIndentantation
+      )}${printedNode}`
     );
   }
 
@@ -146,9 +148,9 @@ export class TextChanger {
   }
 
   /**
-   * 
-   * @param fileName 
-   * @param node 
+   *
+   * @param fileName
+   * @param node
    * @returns All lines of the file that relate to the passed node
    */
   protected getNodeLines(fileName: string, node: tslib.Node) {
@@ -159,19 +161,21 @@ export class TextChanger {
     const lines = fullText?.split('\n');
     const { pos, end } = node;
 
-    return lines?.reduce<{ charCounter: number; nodeLines: string[] }>(
-      ({ charCounter, nodeLines }, line) => {
-        if (charCounter >= pos && charCounter <= end) {
-          nodeLines.push(line);
-        }
+    return (
+      lines?.reduce<{ charCounter: number; nodeLines: string[] }>(
+        ({ charCounter, nodeLines }, line) => {
+          if (charCounter >= pos && charCounter <= end) {
+            nodeLines.push(line);
+          }
 
-        return {
-          // append one symbol to line length as replacement for removed line break
-          charCounter: charCounter + line.length + 1,
-          nodeLines,
-        };
-      },
-      { charCounter: 0, nodeLines: [] }
-    ).nodeLines || [];
+          return {
+            // append one symbol to line length as replacement for removed line break
+            charCounter: charCounter + line.length + 1,
+            nodeLines,
+          };
+        },
+        { charCounter: 0, nodeLines: [] }
+      ).nodeLines || []
+    );
   }
 }

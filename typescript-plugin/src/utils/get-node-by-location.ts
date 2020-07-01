@@ -1,7 +1,6 @@
 import * as tslib from 'typescript/lib/tsserverlibrary';
 import { positionOrRangeToNumber } from './normalize-position-or-range';
 
-
 export function findAllNodesInRange(
   sourceFile: tslib.SourceFile,
   position: tslib.TextRange

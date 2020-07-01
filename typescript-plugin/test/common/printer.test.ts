@@ -1,5 +1,9 @@
 import { Printer } from '../../src/common/printer';
-import { getPluginCreateInfo, TEST_FILENAME, withoutIndent } from '../framework';
+import {
+  getPluginCreateInfo,
+  TEST_FILENAME,
+  withoutIndent,
+} from '../framework';
 import * as tslib from 'typescript/lib/tsserverlibrary';
 
 describe('Printer', () => {
@@ -17,10 +21,7 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe('{ property }');
     });
@@ -36,10 +37,7 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe('{ ...property }');
     });
@@ -56,10 +54,7 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe('{ property: alias }');
     });
@@ -80,10 +75,7 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe('{ property = 2 + 4 }');
     });
@@ -99,11 +91,10 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithIndentation(
-        tree,
-        TEST_FILENAME,
-        { base: 4, indentStart: true },
-      );
+      const printed = printer.printNodeWithIndentation(tree, TEST_FILENAME, {
+        base: 4,
+        indentStart: true,
+      });
 
       expect(printed).toBe('    { property }');
     });
@@ -133,10 +124,7 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe(`{
     property1,
@@ -168,11 +156,10 @@ describe('Printer', () => {
         ),
       ]);
 
-      const printed = printer.printNodeWithIndentation(
-        tree,
-        TEST_FILENAME,
-        { base: 4, indentStart: true },
-      );
+      const printed = printer.printNodeWithIndentation(tree, TEST_FILENAME, {
+        base: 4,
+        indentStart: true,
+      });
 
       expect(printed).toBe(`    {
         property1,
@@ -202,10 +189,7 @@ describe('Printer', () => {
         )
       );
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME,
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe('const variable: true = 2 === 2;');
     });
@@ -228,10 +212,7 @@ describe('Printer', () => {
         )
       );
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe('let variable: true = 2 === 2;');
     });
@@ -257,10 +238,7 @@ describe('Printer', () => {
         )
       );
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe('const { property } = variable;');
     });
@@ -299,10 +277,7 @@ describe('Printer', () => {
         )
       );
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       const expected = withoutIndent`
         const {
@@ -310,7 +285,7 @@ describe('Printer', () => {
             property2,
             property3
         } = variable;
-      `
+      `;
 
       expect(printed).toBe(expected);
     });
@@ -336,10 +311,7 @@ describe('Printer', () => {
         tslib.createPostfixIncrement(tslib.createIdentifier('a'))
       );
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME,
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe(`(a: number): number => a++`);
     });
@@ -361,14 +333,13 @@ describe('Printer', () => {
         tslib.createKeywordTypeNode(tslib.SyntaxKind.NumberKeyword),
         tslib.createToken(tslib.SyntaxKind.EqualsGreaterThanToken),
         tslib.createBlock([
-          tslib.createReturn(tslib.createPostfixIncrement(tslib.createIdentifier('a')))
+          tslib.createReturn(
+            tslib.createPostfixIncrement(tslib.createIdentifier('a'))
+          ),
         ])
       );
 
-      const printed = printer.printNodeWithoutIndentation(
-        tree,
-        TEST_FILENAME
-      );
+      const printed = printer.printNodeWithoutIndentation(tree, TEST_FILENAME);
 
       expect(printed).toBe(`(a: number): number => {
     return a++;
@@ -392,15 +363,16 @@ describe('Printer', () => {
         tslib.createKeywordTypeNode(tslib.SyntaxKind.NumberKeyword),
         tslib.createToken(tslib.SyntaxKind.EqualsGreaterThanToken),
         tslib.createBlock([
-          tslib.createReturn(tslib.createPostfixIncrement(tslib.createIdentifier('a')))
+          tslib.createReturn(
+            tslib.createPostfixIncrement(tslib.createIdentifier('a'))
+          ),
         ])
       );
 
-      const printed = printer.printNodeWithIndentation(
-        tree,
-        TEST_FILENAME,
-        { base: 4, indentStart: true },
-      );
+      const printed = printer.printNodeWithIndentation(tree, TEST_FILENAME, {
+        base: 4,
+        indentStart: true,
+      });
 
       expect(printed).toBe(`    (a: number): number => {
         return a++;

@@ -15,7 +15,7 @@ describe('Destructure function parameter', () => {
 
   beforeEach(() => {
     refactor = ctx.refactor;
-  })
+  });
 
   it('Can be applied at function parameter', () => {
     const mock = file`

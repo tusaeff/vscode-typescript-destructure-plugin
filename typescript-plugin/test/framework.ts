@@ -88,11 +88,15 @@ export class Framework {
   }
 
   removeFile(file: MockFile) {
-    this.languageServiceHost.files = this.languageServiceHost.files.filter((f) => f !== file);
+    this.languageServiceHost.files = this.languageServiceHost.files.filter(
+      (f) => f !== file
+    );
   }
 
   flushFiles() {
-    this.languageServiceHost.files = this.languageServiceHost.files.filter((f) => f.name === TEST_FILENAME);
+    this.languageServiceHost.files = this.languageServiceHost.files.filter(
+      (f) => f.name === TEST_FILENAME
+    );
   }
 
   getPluginCreateInfo(): tslib.server.PluginCreateInfo {
@@ -144,7 +148,7 @@ export const withoutIndentFn = (text: string) => {
     .map((line) => line.slice(baseIndent))
     .join('\n')
     .trim();
-}
+};
 
 export const withoutIndent = (
   strings: TemplateStringsArray,

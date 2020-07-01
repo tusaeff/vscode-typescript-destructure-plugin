@@ -46,22 +46,22 @@ export class Printer {
         return this.printVariableStatement(
           node as tslib.VariableStatement,
           fileName,
-          indentation,
+          indentation
         );
 
       case tslib.SyntaxKind.VariableDeclarationList:
         return this.printVariableDeclarationList(
           node as tslib.VariableDeclarationList,
           fileName,
-          indentation,
+          indentation
         );
 
       case tslib.SyntaxKind.VariableDeclaration:
         return this.printVariableDeclaration(
           node as tslib.VariableDeclaration,
           fileName,
-          indentation,
-        )
+          indentation
+        );
 
       case tslib.SyntaxKind.Block:
         return this.printBlock(node as tslib.Block, fileName, indentation);
@@ -78,65 +78,74 @@ export class Printer {
   protected printVariableDeclaration(
     node: tslib.VariableDeclaration,
     fileName: string,
-    indentation: IIndentationOptions = { base: 0, indentStart: false },
+    indentation: IIndentationOptions = { base: 0, indentStart: false }
   ) {
-    const {
-      name,
-      exclamationToken,
-      type,
-      initializer,
-    } = node;
+    const { name, exclamationToken, type, initializer } = node;
 
     return [
       this.printNodeWithIndentation(name, fileName, indentation),
       exclamationToken && '!',
       type && `: ${this.printNodeWithIndentation(type, fileName, indentation)}`,
-      initializer && ` = ${this.printNodeWithIndentation(initializer, fileName, indentation)}`
-    ].filter(Boolean).join('');
+      initializer &&
+        ` = ${this.printNodeWithIndentation(
+          initializer,
+          fileName,
+          indentation
+        )}`,
+    ]
+      .filter(Boolean)
+      .join('');
   }
 
   protected printVariableDeclarationList(
     node: tslib.VariableDeclarationList,
     fileName: string,
-    indentation: IIndentationOptions = { base: 0, indentStart: false },
-) {
-  let keyword;
+    indentation: IIndentationOptions = { base: 0, indentStart: false }
+  ) {
+    let keyword;
 
-  if (node.flags & tslib.NodeFlags.Const) {
-    keyword = 'const';
+    if (node.flags & tslib.NodeFlags.Const) {
+      keyword = 'const';
+    }
+
+    if (node.flags & tslib.NodeFlags.Let) {
+      keyword = 'let';
+    }
+
+    if (!keyword) {
+      keyword = 'var';
+    }
+
+    const printedDeclarations = node.declarations
+      .map((d) =>
+        this.printNodeWithIndentation(d, fileName, {
+          indentStart: false,
+          base: indentation.base,
+        })
+      )
+      .join(', ');
+
+    return [
+      indentation.indentStart
+        ? this.getIndentationAsString(indentation.base)
+        : '',
+      keyword,
+      ' ',
+      printedDeclarations,
+      ';',
+    ].join('');
   }
-
-  if (node.flags & tslib.NodeFlags.Let) {
-    keyword = 'let';
-  }
-
-  if (!keyword) {
-    keyword = 'var';
-  }
-
-  const printedDeclarations = node.declarations
-    .map((d) => this.printNodeWithIndentation(d, fileName, { indentStart: false, base: indentation.base }))
-    .join(', ');
-
-  return [
-    indentation.indentStart ? this.getIndentationAsString(indentation.base) : '',
-    keyword,
-    ' ',
-    printedDeclarations,
-    ';'
-  ].join('');
-}
 
   protected printVariableStatement(
     node: tslib.VariableStatement,
     fileName: string,
-    indentation: IIndentationOptions = { base: 0, indentStart: false },
+    indentation: IIndentationOptions = { base: 0, indentStart: false }
   ) {
     return this.printNodeWithIndentation(
       node.declarationList,
       fileName,
       indentation
-    )
+    );
   }
 
   protected printBlock(

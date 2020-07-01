@@ -21,7 +21,9 @@ export function getApplicableRefactors(
   );
 
   return availableRefactors
-    .filter((refactor) => refactor.canBeApplied(nodeAtCursor, fileName, positionOrRange))
+    .filter((refactor) =>
+      refactor.canBeApplied(nodeAtCursor, fileName, positionOrRange)
+    )
     .map((refactor) => ({
       name: refactor.name,
       actions: refactor.actions,
