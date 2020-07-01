@@ -2,7 +2,7 @@
 
 This [TypeScript Language Service Plugin](https://github.com/Microsoft/TypeScript/wiki/Writing-a-Language-Service-Plugin) provides a set of source actions that simplify object destructuring as well as folding specific properties in rest operator. Also available as an [extension for VSCode](https://marketplace.visualstudio.com/items?itemName=tusaeff.vscode-typescript-destructure-plugin).
 
-*🚧 Warning: this package is now in alpha stage, so it may contain bugs. 🚧*
+*🚧 Warning: this package is now in alpha stage, so it may contain formatting bugs. Please file an issue if you encounter any strange behavior 💜 🚧*
 
 ![screencast](assets/destructure-to-constant-main.gif)
 
