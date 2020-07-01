@@ -70,9 +70,7 @@ jobs:
         run: npm install
 
       - name: Publish to VSCode Extensions Marketplace
-        uses: lannonbr/vsce-action@master
-        with:
-          args: "publish -p $VSCE_TOKEN"
+        run: npx vsce publish -p $VSCE_TOKEN
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
 
