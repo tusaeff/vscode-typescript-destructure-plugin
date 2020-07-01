@@ -1,8 +1,8 @@
 const copyFilesFromParentDir = require('./copy-files-from-parent-dir');
-const syncPluginVersion = require('./sync-plugin-version');
+const addPluginDependency = require('./add-plugin-dependency');
 
 async function main() {
-  await Promise.all([copyFilesFromParentDir(), syncPluginVersion()]);
+  await Promise.all([copyFilesFromParentDir(), addPluginDependency()]);
 }
 
 main();

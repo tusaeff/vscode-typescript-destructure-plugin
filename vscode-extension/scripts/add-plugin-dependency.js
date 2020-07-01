@@ -7,6 +7,7 @@ const merge = require('lodash/merge');
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
+const symlink = util.promisify(fs.symlink);
 
 const readJSON = async (filepath) => {
   const json = await readFile(path.join(process.cwd(), filepath), {
@@ -19,7 +20,7 @@ const readJSON = async (filepath) => {
 const writeJSON = async (filepath, content) => {
   return writeFile(
     path.join(process.cwd(), filepath),
-    JSON.stringify(content, null, '\t'),
+    JSON.stringify(content, null, '  '),
     { encoding: 'utf-8' }
   );
 };
@@ -36,7 +37,7 @@ const updateJSON = async (path, update) => {
 const makeNPMPackageUrl = (name, version) =>
   `https://registry.npmjs.org/${name}/-/${name}-${version}.tgz`;
 
-const addPluginToExtensionDependencies = async () => {
+const addPluginDependency = async () => {
   const plugin = await readJSON('../typescript-plugin/package.json');
 
   await updateJSON('./package.json', {
@@ -55,6 +56,17 @@ const addPluginToExtensionDependencies = async () => {
     },
     true
   );
+
+  await linkPlugin(plugin.name);
 };
 
-module.exports = addPluginToExtensionDependencies;
+const linkPlugin = async (pluginName) => {
+  try {
+    await symlink(
+      path.resolve('../typescript-plugin'),
+      path.resolve('./node_modules', pluginName)
+    );
+  } catch (error) {}
+};
+
+module.exports = addPluginDependency;
