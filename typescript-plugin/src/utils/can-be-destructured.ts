@@ -25,7 +25,7 @@ export function canBeDestructured(
   const isUnion = type && type.isUnion();
 
   const isContextForbidden =
-    !node ||
+    !node?.parent ||
     contextsKindsWithForbiddenDestructure.indexOf(node.parent.kind) !== -1;
 
   return Boolean(isIdentifier && isObject && !isContextForbidden && !isUnion);
